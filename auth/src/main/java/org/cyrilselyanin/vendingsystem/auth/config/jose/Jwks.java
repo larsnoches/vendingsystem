@@ -1,4 +1,4 @@
-package org.cyrilselyanin.vendingsystem.auth.jose;
+package org.cyrilselyanin.vendingsystem.auth.config.jose;
 
 import java.security.KeyPair;
 import java.security.interfaces.ECPrivateKey;

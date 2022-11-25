@@ -29,7 +29,6 @@
 CREATE TABLE public.authorities (
 	username varchar(50) NOT NULL,
 	authority varchar(68) NOT NULL,
-	username_users varchar(50),
 	CONSTRAINT authorities_pk PRIMARY KEY (username)
 );
 -- ddl-end --
@@ -57,30 +56,25 @@ CREATE TABLE public.profiles (
 	middlename varchar(255) NOT NULL,
 	email varchar(255) NOT NULL,
 	phone varchar(20),
-	username_users varchar(50),
-	CONSTRAINT profiles_pk PRIMARY KEY (username)
+	CONSTRAINT profiles_pk PRIMARY KEY (username),
+	CONSTRAINT profilies_uq UNIQUE (username)
 );
 -- ddl-end --
 ALTER TABLE public.profiles OWNER TO what;
 -- ddl-end --
 
--- object: users_fk | type: CONSTRAINT --
--- ALTER TABLE public.authorities DROP CONSTRAINT IF EXISTS users_fk CASCADE;
-ALTER TABLE public.authorities ADD CONSTRAINT users_fk FOREIGN KEY (username_users)
-REFERENCES public.users (username) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
+-- object: authorities_fk | type: CONSTRAINT --
+-- ALTER TABLE public.authorities DROP CONSTRAINT IF EXISTS authorities_fk CASCADE;
+ALTER TABLE public.authorities ADD CONSTRAINT authorities_fk FOREIGN KEY (username)
+REFERENCES public.users (username) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE NO ACTION;
 -- ddl-end --
 
--- object: users_fk | type: CONSTRAINT --
--- ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS users_fk CASCADE;
-ALTER TABLE public.profiles ADD CONSTRAINT users_fk FOREIGN KEY (username_users)
-REFERENCES public.users (username) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
--- ddl-end --
-
--- object: profiles_uq | type: CONSTRAINT --
--- ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_uq CASCADE;
-ALTER TABLE public.profiles ADD CONSTRAINT profiles_uq UNIQUE (username_users);
+-- object: profilies_fk | type: CONSTRAINT --
+-- ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profilies_fk CASCADE;
+ALTER TABLE public.profiles ADD CONSTRAINT profilies_fk FOREIGN KEY (username)
+REFERENCES public.users (username) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE NO ACTION;
 -- ddl-end --
 
 
