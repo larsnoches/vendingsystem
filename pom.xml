@@ -22,9 +22,13 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <version.liquibase>4.8.0</version.liquibase>
+
+        <!-- Jackson -->
         <version.jackson>2.13.4</version.jackson>
         <version.jackson-databind>2.13.4.2</version.jackson-databind>
 
+        <!-- Test -->
         <version.mockito-junit>4.5.1</version.mockito-junit>
     </properties>
 
@@ -51,6 +55,11 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
 
