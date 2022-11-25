@@ -9,10 +9,6 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-<!--    <changeSet id="create-schema" author="larsnoches" context="schema">-->
-<!--        <sqlFile dbms="postgresql" path="create-auth-schema.sql" relativeToChangelogFile="true" />-->
-<!--    </changeSet>-->
-
     <changeSet id="import-schema" author="larsnoches" context="schema">
         <sqlFile dbms="postgresql" path="oauth2-authorization-schema.sql" relativeToChangelogFile="true" />
         <sqlFile dbms="postgresql" path="oauth2-authorization-consent-schema.sql" relativeToChangelogFile="true" />
