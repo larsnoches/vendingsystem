@@ -14,7 +14,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,6 +25,7 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationConsentService;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationConsentService;
@@ -72,15 +75,21 @@ public class AuthorizationServerConfig {
 
 	@Bean
 	public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
-		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-				.clientId("vending-client")
-				.clientSecret("{noop}secret")
-				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+//		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+		RegisteredClient registeredClient = RegisteredClient.withId("e4a295f7-0a5f-4cbc-bcd3-d870243d1b05")
+				.clientId("vending_client")
+//				.clientSecret("{noop}12345")
+//				.clientSecret("{bcrypt}12345")
+				.clientSecret(new BCryptPasswordEncoder().encode("12345"))
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
+//				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-				.redirectUri("http://127.0.0.1:8181/login/oauth2/code/messaging-client-oidc")
-				.redirectUri("http://127.0.0.1:8181/authorized")
+				.redirectUri("https://oidcdebugger.com/debug")
+//				.redirectUri("http://127.0.0.1:8181/login/oauth2/code/messaging-client-oidc")
+//				.redirectUri("http://127.0.0.1:4200/callback")
+//				.redirectUri("http://127.0.0.1:8181/authorized")
 				.scope(OidcScopes.OPENID)
 				.scope(OidcScopes.PROFILE)
 				.scope("vending.read")
@@ -209,20 +218,21 @@ public class AuthorizationServerConfig {
 	}
 
 //	@Bean
-//	public void getAuthenticationManager(
+//	public AuthenticationManager getAuthenticationManager(
 //			AuthenticationManagerBuilder builder,
 //			JdbcUserDetailsManager jdbcUserDetailsManager,
-//			PasswordEncoder passwordEncoder,
+////			PasswordEncoder passwordEncoder,
 //			DataSource dataSource
 //	) throws Exception {
-//		builder
+//		return builder
 //			.userDetailsService(jdbcUserDetailsManager)
-//				.passwordEncoder(passwordEncoder)
+////				.passwordEncoder(passwordEncoder)
 //			.and()
 //				.jdbcAuthentication()
-//					.authoritiesByUsernameQuery(AUTHORITIES_BY_USERNAME_QUERY)
-//					.passwordEncoder(passwordEncoder)
-//					.dataSource(dataSource);
+////					.authoritiesByUsernameQuery(AUTHORITIES_BY_USERNAME_QUERY)
+////					.passwordEncoder(passwordEncoder)
+//					.dataSource(dataSource)
+//		.and().build();
 //	}
 
 }

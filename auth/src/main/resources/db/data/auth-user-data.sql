@@ -8,7 +8,8 @@
 --
 -- insert into users (username, password, enabled) values('employee','$2a$10$crqfrdolnvfw6saju0eneoe0vc29aiyxwfsesy2fz2axy3mnh8zga',1);
 insert into users (username, password, enabled)
-values('manager', '$2a$10$crqfrdolnvfw6saju0eneoe0vc29aiyxwfsesy2fz2axy3mnh8zga', 1);
+values('manager', '$2a$12$4VQ8t0ISvHsj3tDClxaWw.X77PdQKHQ8j0d5VB5pGYSzYXhtgqUdG', 1);
+-- manager:what
 --
 -- create table authorities
 -- (
