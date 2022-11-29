@@ -1,0 +1,58 @@
+server:
+  port: ${REGULARBUS_SERVER_PORT:8080}
+#  servlet:
+#    context-path: "/api"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: mappings
+
+spring:
+  application.name: ${REGULARBUS_APPLICATION_NAME:vending_system_regularbus}
+  data:
+    rest:
+      base-path: /api
+
+  # Database connection settings
+  datasource:
+    username: what
+    password: whatwhat
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${REGULARBUS_DB_HOST:localhost}:5432/vending_system_regularbus
+
+  # JPA
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: public
+
+  # Liquibase
+  liquibase:
+    change-log: classpath:db/db-changeset-master.xml
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${REGULARBUS_AUTH_HOST:localhost}:8181
+
+#  rabbitmq:
+#    host: ${CASHREG_RABBITMQ_HOST:localhost}
+#    port: ${CASHREG_RABBITMQ_PORT:5672}
+#    username: ${CASHREG_RABBITMQ_USERNAME:what}
+#    password: ${CASHREG_RABBITMQ_PASSWORD:what}
+
+# Log
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.data: INFO
+    org.pringframework.jdbc.core.JdbcTemplate: DEBUG
+    org.hibernate: DEBUG

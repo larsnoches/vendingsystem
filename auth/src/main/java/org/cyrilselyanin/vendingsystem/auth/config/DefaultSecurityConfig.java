@@ -34,12 +34,16 @@ public class DefaultSecurityConfig {
 
 	private static final String[] UNSECURED_RESOURCE_LIST = new String[] {
 			"/resources/**", "/assets/**", "/css/**",
-			"/webjars/**", "/images/**", "/dandelion/**", "/js/**"
+			"/webjars/**", "/images/**", "/js/**"
 	};
 
 	private static final String[] UNAUTHORIZED_RESOURCE_LIST = new String[] {
-			"/test.html", "/", "/unauthorized*",
+			"/", "/unauthorized*",
 			"/error*", "/users*", "/accessDenied"
+	};
+
+	private static final String[] MANAGER_ONLY_RESOURCE_LIST = new String[] {
+			"/manage", "/manage/**"
 	};
 
 	@Bean
@@ -69,7 +73,7 @@ public class DefaultSecurityConfig {
 					.authorizeRequests()
 						.antMatchers(UNAUTHORIZED_RESOURCE_LIST)
 							.permitAll()
-						.antMatchers("/git", "/manage", "/manage/**")
+						.antMatchers(MANAGER_ONLY_RESOURCE_LIST)
 							.hasRole("MANAGER")
 						.anyRequest()
 							.authenticated()
