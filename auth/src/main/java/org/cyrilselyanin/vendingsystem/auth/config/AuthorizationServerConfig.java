@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.auth.config;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import com.nimbusds.jose.jwk.JWKSet;
@@ -43,6 +44,9 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.sql.DataSource;
 
@@ -87,9 +91,9 @@ public class AuthorizationServerConfig {
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
 				.redirectUri("https://oidcdebugger.com/debug")
-//				.redirectUri("http://127.0.0.1:8181/login/oauth2/code/messaging-client-oidc")
-//				.redirectUri("http://127.0.0.1:4200/callback")
-//				.redirectUri("http://127.0.0.1:8181/authorized")
+				.redirectUri("http://127.0.0.1:8181/login/oauth2/code/messaging-client-oidc")
+				.redirectUri("http://127.0.0.1:4200/callback")
+				.redirectUri("http://127.0.0.1:8181/authorized")
 				.scope(OidcScopes.OPENID)
 				.scope(OidcScopes.PROFILE)
 				.scope("vending.read")
@@ -234,6 +238,20 @@ public class AuthorizationServerConfig {
 //					.dataSource(dataSource)
 //		.and().build();
 //	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowedOrigins(Arrays.asList(
+				"http://localhost",
+				"http://localhost:4200"
+		));
+		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+		configuration.setAllowedHeaders(Arrays.asList("*"));
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
+	}
 
 }
 
