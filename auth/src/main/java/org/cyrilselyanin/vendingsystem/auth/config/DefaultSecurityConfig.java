@@ -58,35 +58,40 @@ public class DefaultSecurityConfig {
 			AuthProperties authProperties
 	) throws Exception {
 
-//		http
-//				.authorizeHttpRequests(authorize ->
-//						authorize.anyRequest().authenticated()
-//				)
-//				.formLogin(withDefaults());
-//		return http.build();
-
 		http
-				.headers()
-					.frameOptions()
-						.sameOrigin()
-				.and()
-					.authorizeRequests()
-						.antMatchers(UNAUTHORIZED_RESOURCE_LIST)
-							.permitAll()
-						.antMatchers(MANAGER_ONLY_RESOURCE_LIST)
-							.hasRole("MANAGER")
-						.anyRequest()
-							.authenticated()
-				.and()
-					.formLogin()
-//						.loginPage("/login")
-						.permitAll()
-				.and()
-					.headers()
-						.cacheControl()
-					.and()
-						.frameOptions()
-							.deny();
+				.authorizeHttpRequests(authorize ->
+						authorize.anyRequest().authenticated()
+				)
+				.formLogin(withDefaults());
+		return http.build();
+
+
+
+//		http
+//				.headers()
+//					.frameOptions()
+//						.sameOrigin()
+//				.and()
+//					.authorizeRequests()
+//						.antMatchers(UNAUTHORIZED_RESOURCE_LIST)
+//							.permitAll()
+//						.antMatchers(MANAGER_ONLY_RESOURCE_LIST)
+//							.hasRole("MANAGER")
+//						.anyRequest()
+//							.authenticated()
+//				.and()
+//					.formLogin()
+////						.loginPage("/login")
+//						.permitAll()
+//				.and()
+//					.headers()
+//						.cacheControl()
+//					.and()
+//						.frameOptions()
+//							.deny();
+
+
+
 //				.and()
 //					.exceptionHandling()
 //						.accessDeniedPage("/access?error")
@@ -105,7 +110,7 @@ public class DefaultSecurityConfig {
 //						.maximumSessions(1)
 //						.expiredUrl("/login?expired");
 
-		return http.build();
+//		return http.build();
 	}
 
 //	@Bean

@@ -29,6 +29,7 @@ public class DefaultSecurityConfig {
 				)
 				.oauth2ResourceServer().jwt();
 
+
 //		http
 //				.headers()
 //					.frameOptions()
@@ -44,6 +45,8 @@ public class DefaultSecurityConfig {
 //				.and()
 //					.oauth2ResourceServer().jwt();
 
+		http.cors();
+
 		return http.build();
 	}
 
@@ -51,10 +54,11 @@ public class DefaultSecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList(
-				"http://localhost",
-				"http://localhost:4200"
+				"*"
+//				"http://localhost",
+//				"http://localhost:4200"
 		));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);

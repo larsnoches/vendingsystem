@@ -131,3 +131,16 @@ services:
 #      - CASHREG_RABBITMQ_HOST=rabbitmq
 #      - CASHREG_RABBITMQ_USERNAME=what
 #      - CASHREG_RABBITMQ_PASSWORD=what
+
+#  webserver:
+#    image: nginx:alpine
+#    container_name: webserver
+#    restart: unless-stopped
+#    tty: true
+#    ports:
+#      - "8282:80"
+##      - "443:443"
+#    volumes:
+#      - ./pub:/usr/share/nginx/html
+##      - ./pub:/var/www
+#      - ./nginx/conf.d/app.conf:/etc/nginx/conf.d/app2.conf

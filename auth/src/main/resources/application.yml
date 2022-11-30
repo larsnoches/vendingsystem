@@ -36,3 +36,15 @@ auth:
 #  database:
 #    username: ${DB_USERNAME:what}
 #    password: ${DB_PASSWORD:whatwhat}
+
+# Log
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.data: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.authentication: DEBUG
+    org.springframework.security.authorization: DEBUG
+    org.pringframework.jdbc.core.JdbcTemplate: DEBUG
+    org.hibernate: DEBUG

@@ -1,13 +1,18 @@
 package org.cyrilselyanin.vendingsystem.auth.config;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 import java.util.UUID;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import org.cyrilselyanin.vendingsystem.auth.config.jose.Jwks;
+//import org.cyrilselyanin.vendingsystem.auth.config.jose.Jwks;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -73,14 +78,15 @@ public class AuthorizationServerConfig {
 								new LoginUrlAuthenticationEntryPoint("/login")
 						)
 				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+				.cors();
 		return http.build();
 	}
 
 	@Bean
 	public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
-//		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-		RegisteredClient registeredClient = RegisteredClient.withId("e4a295f7-0a5f-4cbc-bcd3-d870243d1b05")
+		RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+//		RegisteredClient registeredClient = RegisteredClient.withId("e4a295f7-0a5f-4cbc-bcd3-d870243d1b05")
 				.clientId("vending_client")
 //				.clientSecret("{noop}12345")
 //				.clientSecret("{bcrypt}12345")
@@ -90,10 +96,32 @@ public class AuthorizationServerConfig {
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+
 				.redirectUri("https://oidcdebugger.com/debug")
+//				.redirectUri("http://localhost:8181/login/oauth2/code/messaging-client-oidc")
+//				.redirectUri("http://localhost:4200/*")
+//				.redirectUri("http://localhost:4200/callback")
+//				.redirectUri("http://localhost:8181/authorized")
+//
+//				.redirectUri("http://localhost:8282/*")
+//				.redirectUri("http://localhost:8282/callback")
+//				.redirectUri("http://localhost:8282")
+
 				.redirectUri("http://127.0.0.1:8181/login/oauth2/code/messaging-client-oidc")
-				.redirectUri("http://127.0.0.1:4200/callback")
 				.redirectUri("http://127.0.0.1:8181/authorized")
+
+				.redirectUri("http://127.0.0.1:8282/*")
+				.redirectUri("http://127.0.0.1:8282/callback")
+				.redirectUri("http://127.0.0.1:8282")
+
+				.redirectUri("http://127.0.0.1:4200/*")
+				.redirectUri("http://127.0.0.1:4200/callback")
+				.redirectUri("http://127.0.0.1:4200")
+
+//				.redirectUri("http://localhost:8282/index.html")
+//				.redirectUri("http://192.168.9.2:8282/*")
+//				.redirectUri("http://192.168.9.2:8282/index.html")
+
 				.scope(OidcScopes.OPENID)
 				.scope(OidcScopes.PROFILE)
 				.scope("vending.read")
@@ -130,11 +158,37 @@ public class AuthorizationServerConfig {
 		return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
 	}
 
+//	@Bean
+//	public JWKSource<SecurityContext> jwkSource() {
+//		RSAKey rsaKey = Jwks.generateRsa();
+//		JWKSet jwkSet = new JWKSet(rsaKey);
+//		return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+//	}
+
 	@Bean
 	public JWKSource<SecurityContext> jwkSource() {
-		RSAKey rsaKey = Jwks.generateRsa();
+		KeyPair keyPair = generateRsaKey();
+		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
+		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
+		RSAKey rsaKey = new RSAKey.Builder(publicKey)
+				.privateKey(privateKey)
+				.keyID(UUID.randomUUID().toString())
+				.build();
 		JWKSet jwkSet = new JWKSet(rsaKey);
-		return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+		return new ImmutableJWKSet<>(jwkSet);
+	}
+
+	private static KeyPair generateRsaKey() {
+		KeyPair keyPair;
+		try {
+			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+			keyPairGenerator.initialize(2048);
+			keyPair = keyPairGenerator.generateKeyPair();
+		}
+		catch (Exception ex) {
+			throw new IllegalStateException(ex);
+		}
+		return keyPair;
 	}
 
 	@Bean
@@ -243,10 +297,11 @@ public class AuthorizationServerConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList(
-				"http://localhost",
-				"http://localhost:4200"
+				"*"
+//				"http://localhost",
+//				"http://localhost:4200"
 		));
-		configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
