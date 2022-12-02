@@ -33,6 +33,10 @@ spring:
 auth:
   rememberMeToken: whatToken
   rememberMeParameter: rememberMe
+  clientSecret: ${AUTH_CLIENT_SECRET:12345}
+  clientRedirectHost: ${AUTH_CLIENT_REDIRECT_HOST:127.0.0.1}
+  clientRedirectPort: ${AUTH_CLIENT_REDIRECT_PORT:4200}
+
 #  database:
 #    username: ${DB_USERNAME:what}
 #    password: ${DB_PASSWORD:whatwhat}

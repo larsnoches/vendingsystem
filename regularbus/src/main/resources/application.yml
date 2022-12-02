@@ -41,7 +41,7 @@ spring:
       resourceserver:
         jwt:
 #          issuer-uri: http://${REGULARBUS_AUTH_HOST:localhost}:8181/oauth2/authorize
-          issuer-uri: http://${REGULARBUS_AUTH_HOST:localhost}:8181
+          issuer-uri: http://${REGULARBUS_AUTH_HOST:127.0.0.1}:8181
 
 #  rabbitmq:
 #    host: ${CASHREG_RABBITMQ_HOST:localhost}

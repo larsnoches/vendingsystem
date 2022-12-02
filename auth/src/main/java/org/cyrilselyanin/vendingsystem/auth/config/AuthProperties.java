@@ -12,4 +12,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class AuthProperties {
 	private String rememberMeToken;
 	private String rememberMeParameter;
+	private String clientSecret;
+	private String clientRedirectHost;
+	private String clientRedirectPort;
+
 }
