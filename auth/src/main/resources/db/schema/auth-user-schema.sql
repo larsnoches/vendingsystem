@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 0.9.4
--- PostgreSQL version: 12.0
+-- PostgreSQL version: 13.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- object: what | type: ROLE --
@@ -24,24 +24,60 @@
 -- ddl-end --
 
 
--- object: public.authorities | type: TABLE --
--- DROP TABLE IF EXISTS public.authorities CASCADE;
-CREATE TABLE public.authorities (
-	username varchar(50) NOT NULL,
-	authority varchar(68) NOT NULL,
-	CONSTRAINT authorities_pk PRIMARY KEY (username)
-);
+-- object: public.authorities_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.authorities_seq CASCADE;
+CREATE SEQUENCE public.authorities_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 2147483647
+	START WITH 1
+	CACHE 1
+	NO CYCLE
+	OWNED BY NONE;
+
 -- ddl-end --
-ALTER TABLE public.authorities OWNER TO what;
+ALTER SEQUENCE public.authorities_seq OWNER TO what;
+-- ddl-end --
+
+-- object: public.users_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.users_seq CASCADE;
+CREATE SEQUENCE public.users_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 2147483647
+	START WITH 1
+	CACHE 1
+	NO CYCLE
+	OWNED BY NONE;
+
+-- ddl-end --
+ALTER SEQUENCE public.users_seq OWNER TO what;
+-- ddl-end --
+
+-- object: public.profiles_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.profiles_seq CASCADE;
+CREATE SEQUENCE public.profiles_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 2147483647
+	START WITH 1
+	CACHE 1
+	NO CYCLE
+	OWNED BY NONE;
+
+-- ddl-end --
+ALTER SEQUENCE public.profiles_seq OWNER TO what;
 -- ddl-end --
 
 -- object: public.users | type: TABLE --
 -- DROP TABLE IF EXISTS public.users CASCADE;
 CREATE TABLE public.users (
+	user_id bigint NOT NULL DEFAULT nextval('public.users_seq'::regclass),
 	username varchar(50) NOT NULL,
 	password varchar(68) NOT NULL,
 	enabled smallint NOT NULL,
-	CONSTRAINT users_pk PRIMARY KEY (username)
+	CONSTRAINT users_pk PRIMARY KEY (user_id),
+	CONSTRAINT username_uq UNIQUE (username)
 );
 -- ddl-end --
 ALTER TABLE public.users OWNER TO what;
@@ -50,17 +86,30 @@ ALTER TABLE public.users OWNER TO what;
 -- object: public.profiles | type: TABLE --
 -- DROP TABLE IF EXISTS public.profiles CASCADE;
 CREATE TABLE public.profiles (
+	profile_id bigint NOT NULL DEFAULT nextval('public.profiles_seq'::regclass),
 	username varchar(50) NOT NULL,
-	lastname varchar(255) NOT NULL,
-	firstname varchar(255) NOT NULL,
-	middlename varchar(255) NOT NULL,
-	email varchar(255) NOT NULL,
+	lastname varchar(255),
+	firstname varchar(255),
+	middlename varchar(255),
+	email varchar(255),
 	phone varchar(20),
-	CONSTRAINT profiles_pk PRIMARY KEY (username),
+	CONSTRAINT profiles_pk PRIMARY KEY (profile_id),
 	CONSTRAINT profilies_uq UNIQUE (username)
 );
 -- ddl-end --
 ALTER TABLE public.profiles OWNER TO what;
+-- ddl-end --
+
+-- object: public.authorities | type: TABLE --
+-- DROP TABLE IF EXISTS public.authorities CASCADE;
+CREATE TABLE public.authorities (
+	authority_id bigint NOT NULL DEFAULT nextval('public.authorities_seq'::regclass),
+	username varchar(50) NOT NULL,
+	authority varchar(68) NOT NULL,
+	CONSTRAINT authorities_pk PRIMARY KEY (authority_id)
+);
+-- ddl-end --
+ALTER TABLE public.authorities OWNER TO what;
 -- ddl-end --
 
 -- object: authorities_fk | type: CONSTRAINT --

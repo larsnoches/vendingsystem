@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -15,41 +16,50 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class Profile {
+
 	@Id
+	@GeneratedValue(
+			strategy = GenerationType.SEQUENCE,
+			generator = "profiles_gen")
+	@SequenceGenerator(
+			name = "profiles_gen",
+			sequenceName="profiles_seq",
+			allocationSize = 1)
+	@Column(name = "profile_id", nullable = false)
+	private Long id;
+
+	@NotBlank(message = "Имя пользователя не может быть пустым")
 	@Column(name = "username", nullable = false)
 	private String username;
 
 	@Size(
-		min = 2,
 		max = 255,
-		message = "Lastname must be between 2 and 255 characters")
-	@Column(name = "lastname", nullable = false)
+		message = "Фамилия должна быть не более 255 символов")
+	@Column(name = "lastname")
 	private String lastname;
 
 	@Size(
-			min = 2,
-			max = 255,
-			message = "Firstname must be between 2 and 255 characters")
-	@Column(name = "firstname", nullable = false)
+		max = 255,
+		message = "Имя должно быть не более 255 символов")
+	@Column(name = "firstname")
 	private String firstname;
 
 	@Size(
-			min = 2,
-			max = 255,
-			message = "Middlename must be between 2 and 255 characters")
-	@Column(name = "middlename", nullable = false)
+		max = 255,
+		message = "Отчество должно быть не более 255 символов")
+	@Column(name = "middlename")
 	private String middlename;
 
 	@Size(
-			min = 2,
-			max = 255,
-			message = "Email must be between 2 and 255 characters")
-	@Column(name = "email", nullable = false)
+		max = 255,
+		message = "Email должен быть не более 255 символов")
+	@Column(name = "email")
 	private String email;
 
 	@Size(
-			max = 20,
-			message = "Phone must be between 2 and 255 characters")
+		max = 20,
+		message = "Номер телефона должен быть не более 20 символов")
 	@Column(name = "phone", length = 20)
 	private String phone;
+
 }
