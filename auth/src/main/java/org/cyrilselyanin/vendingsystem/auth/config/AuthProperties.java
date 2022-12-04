@@ -10,10 +10,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "auth")
 public class AuthProperties {
+
 	private String rememberMeToken;
 	private String rememberMeParameter;
 	private String clientSecret;
 	private String clientRedirectHost;
 	private String clientRedirectPort;
+	private String clientUserRegistrationUrl;
+	private String clientUserDefaultUrl;
 
 }

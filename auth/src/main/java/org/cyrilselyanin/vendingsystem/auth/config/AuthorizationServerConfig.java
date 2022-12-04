@@ -58,11 +58,11 @@ public class AuthorizationServerConfig {
 				.oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
 
 		http
-				.exceptionHandling(exceptions ->
-						exceptions.authenticationEntryPoint(
-								new LoginUrlAuthenticationEntryPoint("/login")
-						)
-				)
+//				.exceptionHandling(exceptions ->
+//						exceptions.authenticationEntryPoint(
+//								new LoginUrlAuthenticationEntryPoint("/login")
+//						)
+//				)
 				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
 				.cors();
 
@@ -112,11 +112,11 @@ public class AuthorizationServerConfig {
 				.scope(OidcScopes.PROFILE)
 				.scope("vending.read")
 				.scope("vending.write")
-				.clientSettings(
-						ClientSettings.builder()
-								.requireAuthorizationConsent(true)
-								.build()
-				)
+//				.clientSettings(
+//						ClientSettings.builder()
+//								.requireAuthorizationConsent(true)
+//								.build()
+//				)
 				.build();
 
 		// Save registered client in db as if in-memory

@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @EnableWebSecurity
 @Configuration
@@ -32,7 +33,7 @@ public class DefaultSecurityConfig {
 
 	@Bean
 	public WebSecurityCustomizer webSecurityCustomizer() {
-		return (web) -> web
+		return web -> web
 				.ignoring().antMatchers(UNSECURED_RESOURCE_LIST);
 	}
 
@@ -50,8 +51,6 @@ public class DefaultSecurityConfig {
 //				.formLogin(withDefaults());
 //		return http.build();
 
-
-
 		http
 				.headers()
 					.frameOptions()
@@ -68,32 +67,34 @@ public class DefaultSecurityConfig {
 							.authenticated()
 				.and()
 					.formLogin()
-//						.loginPage("/login")
+						.loginPage("/login")
+						.defaultSuccessUrl(authProperties.getClientUserDefaultUrl())
+						.failureUrl("/login?error")
 						.permitAll()
 				.and()
 					.headers()
 						.cacheControl()
 					.and()
 						.frameOptions()
-							.deny();
-
-//				.and()
-//					.exceptionHandling()
-//						.accessDeniedPage("/access?error")
+							.deny()
+				.and()
+					.exceptionHandling()
+						.accessDeniedPage("/login?access")
 //				.and()
 //					.rememberMe()
 //						.useSecureCookie(true)
 //						.tokenValiditySeconds(60 * 60 * 24 * 10) // 10 days
 //						.rememberMeServices(rememberMeServices)
 //						.key(authProperties.getRememberMeToken())
-//				.and()
-//					.logout()
-//						.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-//						.logoutSuccessUrl("/?logout")
-//				.and()
-//					.sessionManagement()
-//						.maximumSessions(1)
-//						.expiredUrl("/login?expired");
+				.and()
+					.logout()
+						.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+						.deleteCookies("JSESSIONID")
+						.logoutSuccessUrl("/login?logout")
+				.and()
+					.sessionManagement()
+						.maximumSessions(1)
+						.expiredUrl("/login?expired");
 
 		return http.build();
 	}

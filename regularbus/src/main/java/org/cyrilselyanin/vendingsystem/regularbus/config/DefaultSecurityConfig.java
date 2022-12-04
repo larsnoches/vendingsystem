@@ -23,27 +23,27 @@ public class DefaultSecurityConfig {
 
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		http
-				.authorizeHttpRequests(authz ->
-						authz.anyRequest().authenticated()
-				)
-				.oauth2ResourceServer().jwt();
-
-
 //		http
-//				.headers()
-//					.frameOptions()
-//						.sameOrigin()
-//				.and()
-//					.authorizeRequests()
-//						.antMatchers(UNAUTHORIZED_RESOURCE_LIST)
-//							.permitAll()
-//						.antMatchers(MANAGER_ONLY_RESOURCE_LIST)
-//							.hasRole("MANAGER")
-//						.anyRequest()
-//							.authenticated()
-//				.and()
-//					.oauth2ResourceServer().jwt();
+//				.authorizeHttpRequests(authz ->
+//						authz.anyRequest().authenticated()
+//				)
+//				.oauth2ResourceServer().jwt();
+
+
+		http
+				.headers()
+					.frameOptions()
+						.sameOrigin()
+				.and()
+					.authorizeRequests()
+						.antMatchers(UNAUTHORIZED_RESOURCE_LIST)
+							.permitAll()
+						.antMatchers(MANAGER_ONLY_RESOURCE_LIST)
+							.hasRole("MANAGER")
+						.anyRequest()
+							.authenticated()
+				.and()
+					.oauth2ResourceServer().jwt();
 
 		http.cors();
 
@@ -54,12 +54,29 @@ public class DefaultSecurityConfig {
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList(
-				"*"
-//				"http://localhost",
-//				"http://localhost:4200"
+				"http://127.0.0.1:4200",
+				"http://127.0.0.1:4200/*",
+				"http://127.0.0.1:4200/**",
+				"http://127.0.0.1:4200/",
+				"http://127.0.0.1:4200/callback",
+				"http://127.0.0.1:8181/",
+				"http://127.0.0.1:8181/*",
+				"http://127.0.0.1:8181/**",
+				"http://127.0.0.1:8181",
+				"http://localhost",
+				"http://localhost:4200",
+				"http://192.168.9.2:4200/callback",
+				"http://192.168.9.2:4200/",
+				"http://192.168.9.2:4200",
+				"http://127.0.0.1:8181/login",
+				"http://127.0.0.1:8181/userinfo"
 		));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
+//		configuration.setAllowedMethods(Arrays.asList("*"));
+		configuration.setAllowedMethods(Arrays.asList(
+				"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+		));
+		configuration.setAllowCredentials(true);
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 		return source;
