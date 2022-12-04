@@ -1,8 +1,11 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
+import org.cyrilselyanin.vendingsystem.regularbus.helper.JwtRoleConverter;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -11,6 +14,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class DefaultSecurityConfig {
 
 	private static final String[] UNAUTHORIZED_RESOURCE_LIST = new String[] {
@@ -28,7 +32,8 @@ public class DefaultSecurityConfig {
 //						authz.anyRequest().authenticated()
 //				)
 //				.oauth2ResourceServer().jwt();
-
+		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new JwtRoleConverter());
 
 		http
 				.headers()
@@ -43,7 +48,9 @@ public class DefaultSecurityConfig {
 						.anyRequest()
 							.authenticated()
 				.and()
-					.oauth2ResourceServer().jwt();
+					.oauth2ResourceServer()
+						.jwt()
+						.jwtAuthenticationConverter(jwtAuthenticationConverter);
 
 		http.cors();
 
