@@ -22,7 +22,7 @@ public class DefaultSecurityConfig {
 
 	private static final String[] UNAUTHORIZED_RESOURCE_LIST = new String[] {
 			"/", "/unauthorized*", "/login",
-			"/oauth2/authorize",
+			"/oauth2/authorize", "/register",
 //			"/userinfo",
 			"/error*", "/users*", "/accessDenied"
 	};
