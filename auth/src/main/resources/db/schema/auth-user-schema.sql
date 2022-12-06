@@ -1,6 +1,6 @@
 -- Database generated with pgModeler (PostgreSQL Database Modeler).
 -- pgModeler version: 0.9.4
--- PostgreSQL version: 13.0
+-- PostgreSQL version: 12.0
 -- Project Site: pgmodeler.io
 -- Model Author: ---
 -- object: what | type: ROLE --
@@ -75,7 +75,7 @@ CREATE TABLE public.users (
 	user_id bigint NOT NULL DEFAULT nextval('public.users_seq'::regclass),
 	username varchar(50) NOT NULL,
 	password varchar(68) NOT NULL,
-	enabled smallint NOT NULL,
+	enabled boolean NOT NULL,
 	CONSTRAINT users_pk PRIMARY KEY (user_id),
 	CONSTRAINT username_uq UNIQUE (username)
 );
@@ -112,18 +112,18 @@ CREATE TABLE public.authorities (
 ALTER TABLE public.authorities OWNER TO what;
 -- ddl-end --
 
--- object: authorities_fk | type: CONSTRAINT --
--- ALTER TABLE public.authorities DROP CONSTRAINT IF EXISTS authorities_fk CASCADE;
-ALTER TABLE public.authorities ADD CONSTRAINT authorities_fk FOREIGN KEY (username)
-REFERENCES public.users (username) MATCH SIMPLE
-ON DELETE CASCADE ON UPDATE NO ACTION;
--- ddl-end --
-
 -- object: profilies_fk | type: CONSTRAINT --
 -- ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profilies_fk CASCADE;
 ALTER TABLE public.profiles ADD CONSTRAINT profilies_fk FOREIGN KEY (username)
 REFERENCES public.users (username) MATCH SIMPLE
 ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: authorities_fk | type: CONSTRAINT --
+-- ALTER TABLE public.authorities DROP CONSTRAINT IF EXISTS authorities_fk CASCADE;
+ALTER TABLE public.authorities ADD CONSTRAINT authorities_fk FOREIGN KEY (username)
+REFERENCES public.users (username) MATCH SIMPLE
+ON DELETE CASCADE ON UPDATE NO ACTION;
 -- ddl-end --
 
 

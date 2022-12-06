@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * User profile service
+ * Vending system user profile service
  */
 public interface ProfileService {
 	Profile createOne(Profile profile);

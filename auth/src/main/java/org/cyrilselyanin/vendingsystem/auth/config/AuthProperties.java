@@ -16,7 +16,7 @@ public class AuthProperties {
 	private String clientSecret;
 	private String clientRedirectHost;
 	private String clientRedirectPort;
-	private String clientUserRegistrationUrl;
+//	private String clientUserRegistrationUrl;
 	private String clientUserDefaultUrl;
 
 }

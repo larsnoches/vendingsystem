@@ -36,7 +36,7 @@ auth:
   clientSecret: ${AUTH_CLIENT_SECRET:12345}
   clientRedirectHost: ${AUTH_CLIENT_REDIRECT_HOST:127.0.0.1}
   clientRedirectPort: ${AUTH_CLIENT_REDIRECT_PORT:4200}
-  clientUserRegistrationUrl: ${AUTH_CLIENT_USER_REGISTRATION_URL:http://127.0.0.1:4200/user/registration}
+#  clientUserRegistrationUrl: ${AUTH_CLIENT_USER_REGISTRATION_URL:http://127.0.0.1:4200/user/registration}
   clientUserDefaultUrl: ${AUTH_CLIENT_USER_DEFAULT_URL:http://127.0.0.1:4200}
 
 #  database:

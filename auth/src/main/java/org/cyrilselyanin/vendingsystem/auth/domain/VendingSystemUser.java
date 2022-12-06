@@ -15,7 +15,7 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Getter
 @Setter
-public class User {
+public class VendingSystemUser {
 
 	@Id
 	@GeneratedValue(
@@ -28,31 +28,31 @@ public class User {
 	@Column(name = "user_id", nullable = false)
 	private Long id;
 
-	@NotBlank(message = "Имя пользователя не может быть пустым")
+	@NotBlank(message = "Имя пользователя не может быть пустым.")
 	@Size(
 			min = 2,
 			max = 50,
-			message = "Имя пользователя должно быть от 2 до 50 символов")
+			message = "Имя пользователя должно быть от 2 до 50 символов.")
 	@Column(name = "username", nullable = false)
 	private String username;
 
-	@NotBlank(message = "Пароль не может быть пустым")
+	@NotBlank(message = "Пароль не может быть пустым.")
 	@Size(
 			min = 4,
 			max = 68,
-			message = "Пароль должен быть от 4 до 68 символов")
+			message = "Пароль должен быть от 4 до 68 символов.")
 	@Column(name = "password", nullable = false)
 	private String password;
 
-	@NotBlank(message = "Повторно введенный пароль не может быть пустым")
+	@NotBlank(message = "Повторно введенный пароль не может быть пустым.")
 	@Size(
 			min = 4,
 			max = 68,
-			message = "Повторно введенный пароль должен быть от 4 до 68 символов")
+			message = "Повторно введенный пароль должен быть от 4 до 68 символов.")
 	@Transient
 	private String password2;
 
 	@Column(name = "enabled", nullable = false)
-	private Short enabled;
+	private Boolean enabled;
 
 }

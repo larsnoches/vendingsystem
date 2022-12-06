@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * User profile service implementation
+ * Vending system user profile service implementation
  */
 @Service
-public class ProfileServiceImpl implements ProfileService{
+public class ProfileServiceImpl implements ProfileService {
 
 	private final ProfileRepository profileRepository;
 

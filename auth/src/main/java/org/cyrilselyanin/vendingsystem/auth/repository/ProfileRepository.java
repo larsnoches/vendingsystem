@@ -4,7 +4,7 @@ import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * User profile repository
+ * Vending system user profile repository
  */
-public interface ProfileRepository extends JpaRepository<Profile, String> {
+public interface ProfileRepository extends JpaRepository<Profile, Long> {
 }
