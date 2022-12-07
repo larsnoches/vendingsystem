@@ -1,13 +1,14 @@
 package org.cyrilselyanin.vendingsystem.auth.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.auth.config.AuthProperties;
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
-import org.cyrilselyanin.vendingsystem.auth.domain.VendingSystemUser;
+import org.cyrilselyanin.vendingsystem.auth.dto.RegisterUserDto;
+import org.cyrilselyanin.vendingsystem.auth.helper.UserDetailsBuilder;
 import org.cyrilselyanin.vendingsystem.auth.service.ProfileService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -20,31 +21,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 
+@RequiredArgsConstructor
 @Controller
 public class RegisterController {
 
-	private final String PASSWORDS_NOT_EQUAL_MESSAGE = "Пароли должны совпадать.";
-	private final String USER_ALREADY_EXISTS_MESSAGE = "Данный пользователь уже существует.";
+	private static final String PASSWORDS_NOT_EQUAL_MESSAGE = "Пароли должны совпадать.";
+	private static final String USER_ALREADY_EXISTS_MESSAGE = "Данный пользователь уже существует.";
 
 	private final JdbcUserDetailsManager jdbcUserDetailsManager;
 	private final PasswordEncoder passwordEncoder;
 	private final ProfileService profileService;
 	private final AuthProperties authProperties;
 
-	public RegisterController(
-			JdbcUserDetailsManager jdbcUserDetailsManager,
-			PasswordEncoder passwordEncoder,
-			ProfileService profileService,
-			AuthProperties authProperties
-	) {
-		this.jdbcUserDetailsManager = jdbcUserDetailsManager;
-		this.passwordEncoder = passwordEncoder;
-		this.profileService = profileService;
-		this.authProperties = authProperties;
-	}
-
 	@GetMapping("/register")
-	public String showRegisterPage(VendingSystemUser vendingSystemUser) {
+	public String showRegisterPage(RegisterUserDto user) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof AnonymousAuthenticationToken)) {
 			return "redirect:" + authProperties.getClientUserDefaultUrl();
@@ -54,23 +44,23 @@ public class RegisterController {
 
 	@PostMapping("/register")
 	public String registerUser(
-			@Valid VendingSystemUser vendingSystemUser,
+			@Valid RegisterUserDto user,
 			BindingResult result,
 			Model model
 	) {
-		if (!vendingSystemUser.getPassword().equals(
-				vendingSystemUser.getPassword2()
+		if (!user.getPassword().equals(
+				user.getPassword2()
 		)) {
 			ObjectError error = new ObjectError(
-					"vendingSystemUser",
+					"user",
 					PASSWORDS_NOT_EQUAL_MESSAGE
 			);
 			result.addError(error);
 		}
 
-		if (jdbcUserDetailsManager.userExists(vendingSystemUser.getUsername())) {
+		if (jdbcUserDetailsManager.userExists(user.getUsername())) {
 			ObjectError error = new ObjectError(
-					"vendingSystemUser",
+					"user",
 					USER_ALREADY_EXISTS_MESSAGE
 			);
 			result.addError(error);
@@ -79,16 +69,14 @@ public class RegisterController {
 		if (result.hasErrors()) {
 			return "register";
 		}
-		// https://www.baeldung.com/spring-thymeleaf-error-messages
 
-		String username = vendingSystemUser.getUsername();
-		String password = passwordEncoder.encode(vendingSystemUser.getPassword());
+		String username = user.getUsername();
+		String password = passwordEncoder.encode(user.getPassword());
 
-		UserDetails userDetails = User
-			.withUsername(username)
-			.password(password)
-			.roles("USER")
-			.build();
+		UserDetails userDetails = UserDetailsBuilder.createUserDetailsForUser(
+				username,
+				password
+		);
 		jdbcUserDetailsManager.createUser(userDetails);
 
 		Profile profile = new Profile();
