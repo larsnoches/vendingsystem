@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.auth.service;
 
+import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
 import org.cyrilselyanin.vendingsystem.auth.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
@@ -10,14 +11,11 @@ import java.util.Optional;
 /**
  * Vending system user profile service implementation
  */
+@RequiredArgsConstructor
 @Service
 public class ProfileServiceImpl implements ProfileService {
 
 	private final ProfileRepository profileRepository;
-
-	public ProfileServiceImpl(ProfileRepository profileRepository) {
-		this.profileRepository = profileRepository;
-	}
 
 	@Override
 	public Profile createOne(Profile profile) {
@@ -26,7 +24,7 @@ public class ProfileServiceImpl implements ProfileService {
 
 	@Override
 	public Optional<Profile> getOne(String username) {
-		return Optional.empty();
+		return profileRepository.findByUsername(username);
 	}
 
 	@Override
@@ -35,12 +33,12 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public Profile updateOne(Profile profile) {
-		return null;
+	public void updateOne(Profile profile) {
+		profileRepository.save(profile);
 	}
 
 	@Override
-	public void deleteOne(Profile profile) {
-
+	public void deleteOne(String username) {
+		profileRepository.deleteByUsername(username);
 	}
 }

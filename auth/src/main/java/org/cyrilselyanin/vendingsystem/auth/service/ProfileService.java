@@ -14,7 +14,7 @@ public interface ProfileService {
 	Optional<Profile> getOne(String username);
 	List<Profile> getAll();
 
-	Profile updateOne(Profile profile);
+	void updateOne(Profile profile);
 
-	void deleteOne(Profile profile);
+	void deleteOne(String username);
 }
