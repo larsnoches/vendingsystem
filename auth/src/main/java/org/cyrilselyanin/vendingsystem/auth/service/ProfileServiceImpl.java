@@ -3,9 +3,10 @@ package org.cyrilselyanin.vendingsystem.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
 import org.cyrilselyanin.vendingsystem.auth.repository.ProfileRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -28,8 +29,8 @@ public class ProfileServiceImpl implements ProfileService {
 	}
 
 	@Override
-	public List<Profile> getAll() {
-		return null;
+	public Page<Profile> getAll(Pageable pageable) {
+		return profileRepository.findAll(pageable);
 	}
 
 	@Override
@@ -41,4 +42,5 @@ public class ProfileServiceImpl implements ProfileService {
 	public void deleteOne(String username) {
 		profileRepository.deleteByUsername(username);
 	}
+
 }

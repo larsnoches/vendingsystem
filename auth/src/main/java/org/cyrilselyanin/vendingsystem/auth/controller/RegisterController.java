@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.auth.config.AuthProperties;
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
 import org.cyrilselyanin.vendingsystem.auth.dto.RegisterUserDto;
-import org.cyrilselyanin.vendingsystem.auth.helper.UserDetailsBuilder;
+import org.cyrilselyanin.vendingsystem.auth.helper.UserDetailsFactory;
 import org.cyrilselyanin.vendingsystem.auth.service.ProfileService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,6 +32,7 @@ public class RegisterController {
 	private final PasswordEncoder passwordEncoder;
 	private final ProfileService profileService;
 	private final AuthProperties authProperties;
+	private final UserDetailsFactory userDetailsFactory;
 
 	@GetMapping("/register")
 	public String showRegisterPage(RegisterUserDto user) {
@@ -73,7 +74,7 @@ public class RegisterController {
 		String username = user.getUsername();
 		String password = passwordEncoder.encode(user.getPassword());
 
-		UserDetails userDetails = UserDetailsBuilder.createUserDetailsForUser(
+		UserDetails userDetails = userDetailsFactory.createUserDetailsForUser(
 				username,
 				password
 		);

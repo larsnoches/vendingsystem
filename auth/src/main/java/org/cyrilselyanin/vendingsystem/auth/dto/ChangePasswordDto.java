@@ -4,16 +4,21 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
-/**
- * Create user request DTO
- */
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
+@EqualsAndHashCode
+@ToString
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreateUserDto extends BasicUserDto {
+public class ChangePasswordDto implements Serializable {
+
+	@NotBlank(message = "Имя пользователя не может быть пустым.")
+	@Size(
+			min = 2,
+			max = 50,
+			message = "Имя пользователя должно быть от 2 до 50 символов.")
+	private String username;
 
 	@NotBlank(message = "Пароль не может быть пустым.")
 	@Size(

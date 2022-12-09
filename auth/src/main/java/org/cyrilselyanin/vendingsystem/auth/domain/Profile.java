@@ -1,9 +1,6 @@
 package org.cyrilselyanin.vendingsystem.auth.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -15,16 +12,17 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Profile {
 
 	@Id
 	@GeneratedValue(
-			strategy = GenerationType.SEQUENCE,
-			generator = "profiles_gen")
+		strategy = GenerationType.SEQUENCE,
+		generator = "profiles_gen")
 	@SequenceGenerator(
-			name = "profiles_gen",
-			sequenceName="profiles_seq",
-			allocationSize = 1)
+		name = "profiles_gen",
+		sequenceName="profiles_seq",
+		allocationSize = 1)
 	@Column(name = "profile_id", nullable = false)
 	private Long id;
 
@@ -61,5 +59,16 @@ public class Profile {
 		message = "Номер телефона должен быть не более 20 символов")
 	@Column(name = "phone", length = 20)
 	private String phone;
+
+//	public static Profile fromUserDto(GetOrUpdateProfileDto dto) {
+//		Profile p = new Profile();
+//		p.username = dto.getUsername();
+//		p.lastname = dto.getLastname();
+//		p.firstname = dto.getFirstname();
+//		p.middlename = dto.getMiddlename();
+//		p.email = dto.getEmail();
+//		p.phone = dto.getPhone();
+//		return p;
+//	}
 
 }

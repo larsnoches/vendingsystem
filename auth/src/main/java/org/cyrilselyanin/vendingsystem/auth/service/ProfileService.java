@@ -1,8 +1,9 @@
 package org.cyrilselyanin.vendingsystem.auth.service;
 
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,7 +13,7 @@ public interface ProfileService {
 	Profile createOne(Profile profile);
 
 	Optional<Profile> getOne(String username);
-	List<Profile> getAll();
+	Page<Profile> getAll(Pageable pageable);
 
 	void updateOne(Profile profile);
 
