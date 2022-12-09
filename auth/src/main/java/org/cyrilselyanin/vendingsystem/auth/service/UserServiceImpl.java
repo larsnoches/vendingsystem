@@ -8,7 +8,6 @@ import org.cyrilselyanin.vendingsystem.auth.dto.ChangePasswordDto;
 import org.cyrilselyanin.vendingsystem.auth.dto.CreateOrUpdateUserDto;
 import org.cyrilselyanin.vendingsystem.auth.dto.GetUserDto;
 import org.cyrilselyanin.vendingsystem.auth.helper.*;
-import org.cyrilselyanin.vendingsystem.auth.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,6 @@ public class UserServiceImpl implements UserService {
 
 	private final JdbcUserDetailsManager jdbcUserDetailsManager;
 	private final ProfileService profileService;
-	private final UserRepository userRepository;
 	private final UserDataMapper userDataMapper;
 	private final UserDetailsFactory userDetailsFactory;
 	private final AuthorityMatcher authorityMatcher;
@@ -52,7 +50,7 @@ public class UserServiceImpl implements UserService {
 				.build();
 		profileService.createOne(profile);
 
-		return userDataMapper.toDto(profile);
+		return userDataMapper.toGetUserDto(profile);
 	}
 
 	@Override
@@ -62,14 +60,6 @@ public class UserServiceImpl implements UserService {
 		userDto.setUsername(userDetails.getUsername());
 		userDto.setIsEnabled(userDetails.isEnabled());
 
-//		Boolean isManager = userDetails.getAuthorities().stream()
-//				.anyMatch(grantedAuthority -> {
-//					log.debug("from enum: " + Authority.MANAGER.name());
-//					log.debug("from collection: " + grantedAuthority.getAuthority());
-//					return grantedAuthority.getAuthority().equals(
-//							Authority.MANAGER.name()
-//					);
-//				});
 		Boolean isManager = authorityMatcher.isManager(userDetails.getAuthorities());
 		userDto.setIsManager(isManager);
 		return userDto;
@@ -78,7 +68,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Page<GetUserDto> getAllUsers(Pageable pageable) {
 		List<GetUserDto> list = profileService.getAll(pageable).stream()
-				.map(userDataMapper::toDto)
+				.map(userDataMapper::toGetUserDto)
 				.collect(Collectors.toList());
 		return new PageImpl<>(list);
 	}
@@ -86,7 +76,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updateOne(CreateOrUpdateUserDto dto) {
 		if (!jdbcUserDetailsManager.userExists(dto.getUsername())) {
-			throw new UserNotFoundException(NO_SUCH_USER_MESSAGE);
+			throw new NotFoundException(NO_SUCH_USER_MESSAGE);
 		}
 
 		UserDetails oldUserDetails = jdbcUserDetailsManager.loadUserByUsername(dto.getUsername());
@@ -105,7 +95,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void changePassword(ChangePasswordDto dto) {
 		if (!jdbcUserDetailsManager.userExists(dto.getUsername())) {
-			throw new UserNotFoundException(NO_SUCH_USER_MESSAGE);
+			throw new NotFoundException(NO_SUCH_USER_MESSAGE);
 		}
 
 		UserDetails oldUserDetails = jdbcUserDetailsManager.loadUserByUsername(dto.getUsername());
@@ -118,7 +108,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteOne(String username) {
 		if (!jdbcUserDetailsManager.userExists(username)) {
-			throw new UserNotFoundException(NO_SUCH_USER_MESSAGE);
+			throw new NotFoundException(NO_SUCH_USER_MESSAGE);
 		}
 		jdbcUserDetailsManager.deleteUser(username);
 	}
