@@ -2,7 +2,9 @@ package org.cyrilselyanin.vendingsystem.auth.dto;
 
 import lombok.*;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -15,6 +17,13 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 public class GetOrUpdateProfileDto implements Serializable {
+
+	@NotNull(message = "Id профиля не может быт пустым.")
+	@Min(
+			value = 0,
+			message = "Id профиля не может быть меньше 0."
+	)
+	private Long id;
 
 	@NotBlank(message = "Имя пользователя не может быть пустым.")
 	@Size(
