@@ -1,21 +1,45 @@
 package org.cyrilselyanin.vendingsystem.auth.service;
 
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
+import org.cyrilselyanin.vendingsystem.auth.dto.GetOrUpdateProfileDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.Optional;
 
 /**
  * Vending system user profile service
  */
 public interface ProfileService {
+
+	/**
+	 * Create profile related with user creation
+	 * @param profile Profile entity
+	 * @return Profile entity
+	 */
 	Profile createOne(Profile profile);
 
-	Optional<Profile> getOne(String username);
+	/**
+	 * Get profile info by self user
+	 * @param username Username
+	 * @return Dto for profile
+	 */
+	GetOrUpdateProfileDto getOne(String username);
+
+	/**
+	 * Get profile entities related with getting user list
+	 * @param pageable Pageable
+	 * @return Profile entities
+	 */
 	Page<Profile> getAll(Pageable pageable);
 
-	void updateOne(Profile profile);
+	/**
+	 * Update profile by self user
+	 * @param dto Dto
+	 */
+	void updateOne(GetOrUpdateProfileDto dto);
 
+	/**
+	 * Delete profile by manager
+	 * @param username
+	 */
 	void deleteOne(String username);
 }
