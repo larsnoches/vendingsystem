@@ -9,8 +9,8 @@
 		http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
 
-    <include file="schema/db-changeset-import-schema.xml" relativeToChangelogFile="true"/>
-    <include file="data/db-changeset-import-data.xml" relativeToChangelogFile="true"/>
+    <changeSet id="import-schema" author="larsnoches" context="schema">
+        <sqlFile dbms="postgresql" path="auth-user-data.sql" relativeToChangelogFile="true" />
+    </changeSet>
 
 </databaseChangeLog>
-

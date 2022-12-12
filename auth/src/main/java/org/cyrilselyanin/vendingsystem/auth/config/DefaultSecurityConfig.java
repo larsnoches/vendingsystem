@@ -40,7 +40,7 @@ public class DefaultSecurityConfig {
 	@Bean
 	public SecurityFilterChain defaultSecurityFilterChain(
 			HttpSecurity http,
-			RememberMeServices rememberMeServices,
+//			RememberMeServices rememberMeServices,
 			AuthProperties authProperties
 	) throws Exception {
 
@@ -52,10 +52,10 @@ public class DefaultSecurityConfig {
 //		return http.build();
 
 		http
-				.headers()
-					.frameOptions()
-						.sameOrigin()
-				.and()
+//				.headers()
+//					.frameOptions()
+//						.sameOrigin()
+//				.and()
 					.authorizeRequests()
 						.antMatchers(UNAUTHORIZED_RESOURCE_LIST)
 							.permitAll()
@@ -63,20 +63,24 @@ public class DefaultSecurityConfig {
 							.hasRole("MANAGER")
 //						.antMatchers(HttpMethod.OPTIONS, "/userinfo")
 //							.permitAll()
+//						.antMatchers("/api/users")
+//							.hasAnyAuthority("ROLE_MANAGER", "ROLE_USER")
+//							.hasRole("MANAGER")
 						.anyRequest()
-							.authenticated()
+							.permitAll()
+//							.authenticated()
 				.and()
 					.formLogin()
 						.loginPage("/login")
 						.defaultSuccessUrl(authProperties.getClientUserDefaultUrl())
 						.failureUrl("/login?error")
 						.permitAll()
-				.and()
-					.headers()
-						.cacheControl()
-					.and()
-						.frameOptions()
-							.deny()
+//				.and()
+//					.headers()
+//						.cacheControl()
+//					.and()
+//						.frameOptions()
+//							.deny()
 //				.and()
 //					.exceptionHandling()
 //						.accessDeniedPage("/login?access")

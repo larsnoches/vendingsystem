@@ -1,7 +1,7 @@
 package org.cyrilselyanin.vendingsystem.auth.helper;
 
 import lombok.NoArgsConstructor;
-import org.cyrilselyanin.vendingsystem.auth.dto.CreateOrUpdateUserDto;
+import org.cyrilselyanin.vendingsystem.auth.dto.CreateUserDto;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 public class UserDetailsFactory {
 
-	public UserDetails createUserDetailsFromDto(CreateOrUpdateUserDto dto) {
+	public UserDetails createUserDetailsFromDto(CreateUserDto dto) {
 		UserDetails userDetails;
 		if (dto.getIsManager()) {
 			userDetails = createUserDetailsForManager(

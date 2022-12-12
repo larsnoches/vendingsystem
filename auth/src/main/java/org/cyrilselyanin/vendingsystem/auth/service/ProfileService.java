@@ -35,7 +35,7 @@ public interface ProfileService {
 	 * Update profile by self user
 	 * @param dto Dto
 	 */
-	void updateOne(GetOrUpdateProfileDto dto);
+	void updateOne(String username, GetOrUpdateProfileDto dto);
 
 	/**
 	 * Delete profile by manager

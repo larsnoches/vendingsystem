@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.cyrilselyanin.vendingsystem.auth.config.jose.Jwks;
+import org.cyrilselyanin.vendingsystem.auth.helper.JwtRoleConverter;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +33,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
@@ -57,6 +59,10 @@ public class AuthorizationServerConfig {
 			HttpSecurity http
 	) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
+
+		JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+		jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new JwtRoleConverter());
+
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
 				.oidc(Customizer.withDefaults());	// Enable OpenID Connect 1.0
 
@@ -66,8 +72,13 @@ public class AuthorizationServerConfig {
 								new LoginUrlAuthenticationEntryPoint("/login")
 						)
 				)
-				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
-				.cors();
+//				.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+//				.cors()
+				.oauth2ResourceServer()
+					.jwt()
+					.jwtAuthenticationConverter(jwtAuthenticationConverter);
+		http.cors();
+//		http.csrf().disable();
 
 		return http.build();
 	}
@@ -87,10 +98,12 @@ public class AuthorizationServerConfig {
 						)
 				)
 				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_POST)
-//				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
 				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 				.authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
 				.authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+				.authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
 
 				.redirectUri("https://oidcdebugger.com/debug")
 				.redirectUri("http://127.0.0.1:8181/login/oauth2/code/messaging-client-oidc")
@@ -139,13 +152,13 @@ public class AuthorizationServerConfig {
 		return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
 	}
 
-	@Bean
-	public OAuth2AuthorizationConsentService authorizationConsentService(
-			JdbcTemplate jdbcTemplate,
-			RegisteredClientRepository registeredClientRepository
-	) {
-		return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
-	}
+//	@Bean
+//	public OAuth2AuthorizationConsentService authorizationConsentService(
+//			JdbcTemplate jdbcTemplate,
+//			RegisteredClientRepository registeredClientRepository
+//	) {
+//		return new JdbcOAuth2AuthorizationConsentService(jdbcTemplate, registeredClientRepository);
+//	}
 
 	@Bean
 	public JWKSource<SecurityContext> jwkSource() {
@@ -155,8 +168,8 @@ public class AuthorizationServerConfig {
 	}
 
 	@Bean
-	public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
-		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
+	public JwtDecoder jwtDecoder() {
+		return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource());
 	}
 
 	@Bean
@@ -177,20 +190,20 @@ public class AuthorizationServerConfig {
 		return AuthorizationServerSettings.builder().build();
 	}
 
-	@Bean
-	public RememberMeServices getRememberMeServices(
-			JdbcUserDetailsManager jdbcUserDetailsManager,
-			JdbcTokenRepositoryImpl jdbcTokenRepositoryImpl,
-			AuthProperties authProperties
-	) {
-		PersistentTokenBasedRememberMeServices services = new PersistentTokenBasedRememberMeServices(
-				authProperties.getRememberMeToken(),
-				jdbcUserDetailsManager,
-				jdbcTokenRepositoryImpl
-		);
-		services.setParameter(authProperties.getRememberMeParameter());
-		return services;
-	}
+//	@Bean
+//	public RememberMeServices getRememberMeServices(
+//			JdbcUserDetailsManager jdbcUserDetailsManager,
+//			JdbcTokenRepositoryImpl jdbcTokenRepositoryImpl,
+//			AuthProperties authProperties
+//	) {
+//		PersistentTokenBasedRememberMeServices services = new PersistentTokenBasedRememberMeServices(
+//				authProperties.getRememberMeToken(),
+//				jdbcUserDetailsManager,
+//				jdbcTokenRepositoryImpl
+//		);
+//		services.setParameter(authProperties.getRememberMeParameter());
+//		return services;
+//	}
 
 	@Bean
 	public JdbcUserDetailsManager getJdbcUserDetailsManager(DataSource dataSource) {
@@ -233,7 +246,6 @@ public class AuthorizationServerConfig {
 				"http://127.0.0.1:8181/userinfo"
 		));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
-//		configuration.setAllowedMethods(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList(
 				"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
 		));

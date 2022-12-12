@@ -1,17 +1,22 @@
 package org.cyrilselyanin.vendingsystem.auth.dto;
 
-import lombok.Data;
+import lombok.*;
 import org.cyrilselyanin.vendingsystem.auth.helper.UserShared;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
- * Register user request DTO
+ * Create user request DTO
  */
-@Data
-public class RegisterUserDto {
+@EqualsAndHashCode
+@ToString
+@Getter
+@Setter
+@NoArgsConstructor
+public class CreateUserDto implements Serializable {
 
 	@NotBlank(message = "Имя пользователя не может быть пустым.")
 	@Size(
@@ -21,18 +26,14 @@ public class RegisterUserDto {
 	@Pattern(regexp = UserShared.USERNAME_REGEXP_PATTERN)
 	private String username;
 
-	@NotBlank(message = "Пароль не может быть пустым.")
 	@Size(
 			min = 4,
 			max = 68,
 			message = "Пароль должен быть от 4 до 68 символов.")
 	private String password;
 
-	@NotBlank(message = "Повторно введенный пароль не может быть пустым.")
-	@Size(
-			min = 4,
-			max = 68,
-			message = "Повторно введенный пароль должен быть от 4 до 68 символов.")
-	private String password2;
+	private Boolean isManager;
+
+	private Boolean isEnabled;
 
 }

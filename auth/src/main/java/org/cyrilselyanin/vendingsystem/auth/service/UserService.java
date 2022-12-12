@@ -1,8 +1,8 @@
 package org.cyrilselyanin.vendingsystem.auth.service;
 
-import org.cyrilselyanin.vendingsystem.auth.dto.ChangePasswordDto;
-import org.cyrilselyanin.vendingsystem.auth.dto.CreateOrUpdateUserDto;
+import org.cyrilselyanin.vendingsystem.auth.dto.CreateUserDto;
 import org.cyrilselyanin.vendingsystem.auth.dto.GetUserDto;
+import org.cyrilselyanin.vendingsystem.auth.dto.UpdateUserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,17 +17,17 @@ public interface UserService {
 	 * @param dto Dto
 	 * @return Dto for response with user info
 	 */
-	GetUserDto createOne(CreateOrUpdateUserDto dto);
+	GetUserDto createOne(CreateUserDto dto);
 
 	/**
 	 * Get user info for edit user form
 	 * @param username User's name
 	 * @return Dto for form
 	 */
-	CreateOrUpdateUserDto getOne(String username);
+	UpdateUserDto getOne(String username);
 
 	/**
-	 * List of users info
+	 * List of users info by manager
 	 * @param pageable Pageable object
 	 * @return Page with users info
 	 */
@@ -37,18 +37,25 @@ public interface UserService {
 	 * Update user by manager
 	 * @param dto Dto
 	 */
-	void updateOne(CreateOrUpdateUserDto dto);
+	void updateOne(String username, UpdateUserDto dto);
 
 	/**
 	 * Change password by self user
 	 * @param dto Dto
 	 */
-	void changePassword(ChangePasswordDto dto);
+	void changePassword(String username, UpdateUserDto dto);
 
 	/**
 	 * Delete user by manager
 	 * @param username Username
 	 */
 	void deleteOne(String username);
+
+	/**
+	 * Check if user exists
+	 * @param username Username
+	 * @return result
+	 */
+	Boolean userExists(String username);
 
 }

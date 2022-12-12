@@ -4,9 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.cyrilselyanin.vendingsystem.auth.domain.Profile;
-import org.cyrilselyanin.vendingsystem.auth.dto.ChangePasswordDto;
-import org.cyrilselyanin.vendingsystem.auth.dto.CreateOrUpdateUserDto;
+import org.cyrilselyanin.vendingsystem.auth.dto.CreateUserDto;
 import org.cyrilselyanin.vendingsystem.auth.dto.GetUserDto;
+import org.cyrilselyanin.vendingsystem.auth.dto.UpdateUserDto;
 import org.cyrilselyanin.vendingsystem.auth.helper.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,10 +23,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
-	private final String USER_ALREADY_EXISTS_MESSAGE = "Данный пользователь уже существует.";
-	private final String NO_SUCH_USER_MESSAGE = "Данный пользователь не существует.";
-	private final String NO_EMPTY_PASSWORD_MESSAGE = "Пароль не может быть пустым.";
-
 	private final JdbcUserDetailsManager jdbcUserDetailsManager;
 	private final ProfileService profileService;
 	private final UserDataMapper userDataMapper;
@@ -34,12 +30,12 @@ public class UserServiceImpl implements UserService {
 	private final AuthorityMatcher authorityMatcher;
 
 	@Override
-	public GetUserDto createOne(CreateOrUpdateUserDto dto) {
+	public GetUserDto createOne(CreateUserDto dto) {
 		if (jdbcUserDetailsManager.userExists(dto.getUsername())) {
-			throw new AuthException(USER_ALREADY_EXISTS_MESSAGE);
+			throw new AuthException(UserShared.USER_ALREADY_EXISTS_MESSAGE);
 		}
 		if (StringUtils.isEmpty(dto.getPassword())) {
-			throw new AuthException(NO_EMPTY_PASSWORD_MESSAGE);
+			throw new AuthException(UserShared.NO_EMPTY_PASSWORD_MESSAGE);
 		}
 
 		UserDetails userDetails = userDetailsFactory.createUserDetailsFromDto(dto);
@@ -54,10 +50,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public CreateOrUpdateUserDto getOne(String username) {
+	public UpdateUserDto getOne(String username) {
+		if (!authorityMatcher.isManager() && !authorityMatcher.isThatUser(username)) {
+			throw new AuthException(UserShared.NO_USER_ACCESS_MESSAGE);
+		}
+		if (!jdbcUserDetailsManager.userExists(username)) {
+			throw new NotFoundException(UserShared.NO_SUCH_USER_MESSAGE);
+		}
 		UserDetails userDetails = jdbcUserDetailsManager.loadUserByUsername(username);
-		CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
-		userDto.setUsername(userDetails.getUsername());
+		UpdateUserDto userDto = new UpdateUserDto();
 		userDto.setIsEnabled(userDetails.isEnabled());
 
 		Boolean isManager = authorityMatcher.isManager(userDetails.getAuthorities());
@@ -74,31 +75,34 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void updateOne(CreateOrUpdateUserDto dto) {
-		if (!jdbcUserDetailsManager.userExists(dto.getUsername())) {
-			throw new NotFoundException(NO_SUCH_USER_MESSAGE);
+	public void updateOne(String username, UpdateUserDto dto) {
+		if (!jdbcUserDetailsManager.userExists(username)) {
+			throw new NotFoundException(UserShared.NO_SUCH_USER_MESSAGE);
 		}
 
-		UserDetails oldUserDetails = jdbcUserDetailsManager.loadUserByUsername(dto.getUsername());
+		UserDetails oldUserDetails = jdbcUserDetailsManager.loadUserByUsername(username);
 		String password = oldUserDetails.getPassword();
 		if (StringUtils.isNotEmpty(dto.getPassword())) {
 			password = dto.getPassword();
 		}
 
 		UserDetails userDetails = userDetailsFactory.createUserDetails(
-				dto.getUsername(), password, dto.getIsEnabled(), dto.getIsManager()
+				username, password, dto.getIsEnabled(), dto.getIsManager()
 		);
 
 		jdbcUserDetailsManager.updateUser(userDetails);
 	}
 
 	@Override
-	public void changePassword(ChangePasswordDto dto) {
-		if (!jdbcUserDetailsManager.userExists(dto.getUsername())) {
-			throw new NotFoundException(NO_SUCH_USER_MESSAGE);
+	public void changePassword(String username, UpdateUserDto dto) {
+		if (!authorityMatcher.isManager() && !authorityMatcher.isThatUser(username)) {
+			throw new AuthException(UserShared.NO_USER_ACCESS_MESSAGE);
+		}
+		if (!jdbcUserDetailsManager.userExists(username)) {
+			throw new NotFoundException(UserShared.NO_SUCH_USER_MESSAGE);
 		}
 
-		UserDetails oldUserDetails = jdbcUserDetailsManager.loadUserByUsername(dto.getUsername());
+		UserDetails oldUserDetails = jdbcUserDetailsManager.loadUserByUsername(username);
 		String oldPassword = oldUserDetails.getPassword();
 		String password = dto.getPassword();
 
@@ -108,9 +112,14 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteOne(String username) {
 		if (!jdbcUserDetailsManager.userExists(username)) {
-			throw new NotFoundException(NO_SUCH_USER_MESSAGE);
+			throw new NotFoundException(UserShared.NO_SUCH_USER_MESSAGE);
 		}
 		jdbcUserDetailsManager.deleteUser(username);
+	}
+
+	@Override
+	public Boolean userExists(String username) {
+		return jdbcUserDetailsManager.userExists(username);
 	}
 
 }

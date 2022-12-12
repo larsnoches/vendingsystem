@@ -1,7 +1,9 @@
 server:
   port: ${REGULARBUS_SERVER_PORT:8080}
 #  servlet:
-#    context-path: "/api"
+#    context-path: "/api/v1"
+  error:
+    include-message: "always"
 
 management:
   endpoints:
@@ -36,12 +38,12 @@ spring:
   liquibase:
     change-log: classpath:db/db-changeset-master.xml
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-#          issuer-uri: http://${REGULARBUS_AUTH_HOST:localhost}:8181/oauth2/authorize
-          issuer-uri: http://${REGULARBUS_AUTH_HOST:127.0.0.1}:8181
+#  security:
+#    oauth2:
+#      resourceserver:
+#        jwt:
+##          issuer-uri: http://${REGULARBUS_AUTH_HOST:localhost}:8181/oauth2/authorize
+#          issuer-uri: http://${REGULARBUS_AUTH_HOST:127.0.0.1}:8181
 
 #  rabbitmq:
 #    host: ${CASHREG_RABBITMQ_HOST:localhost}

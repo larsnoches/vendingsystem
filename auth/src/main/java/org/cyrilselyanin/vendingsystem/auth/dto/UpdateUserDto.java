@@ -2,7 +2,6 @@ package org.cyrilselyanin.vendingsystem.auth.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 
@@ -14,14 +13,7 @@ import java.io.Serializable;
 @Getter
 @Setter
 @NoArgsConstructor
-public class CreateOrUpdateUserDto implements Serializable {
-
-	@NotBlank(message = "Имя пользователя не может быть пустым.")
-	@Size(
-			min = 2,
-			max = 50,
-			message = "Имя пользователя должно быть от 2 до 50 символов.")
-	private String username;
+public class UpdateUserDto implements Serializable {
 
 	@Size(
 			min = 4,

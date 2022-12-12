@@ -330,6 +330,41 @@ REFERENCES public.fares (fare_id) MATCH FULL
 ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
+-- object: public.users_seq | type: SEQUENCE --
+-- DROP SEQUENCE IF EXISTS public.users_seq CASCADE;
+CREATE SEQUENCE public.users_seq
+	INCREMENT BY 1
+	MINVALUE 0
+	MAXVALUE 2147483647
+	START WITH 1
+	CACHE 1
+	NO CYCLE
+	OWNED BY NONE;
+
+-- ddl-end --
+ALTER SEQUENCE public.users_seq OWNER TO what;
+-- ddl-end --
+
+-- object: public.users | type: TABLE --
+-- DROP TABLE IF EXISTS public.users CASCADE;
+CREATE TABLE public.users (
+	user_id bigint NOT NULL DEFAULT nextval('public.users_seq'::regclass),
+	email varchar(255) NOT NULL,
+	password varchar(68) NOT NULL,
+	lastname varchar(255),
+	firstname varchar(255),
+	middlename varchar(255),
+	enabled boolean,
+	user_role varchar(255) NOT NULL,
+	CONSTRAINT users_pk PRIMARY KEY (user_id),
+	CONSTRAINT email_uq UNIQUE (email)
+);
+-- ddl-end --
+COMMENT ON TABLE public.users IS E'Пользователи';
+-- ddl-end --
+ALTER TABLE public.users OWNER TO what;
+-- ddl-end --
+
 -- object: departure_buspoints_fk | type: CONSTRAINT --
 -- ALTER TABLE public.bustrips DROP CONSTRAINT IF EXISTS departure_buspoints_fk CASCADE;
 ALTER TABLE public.bustrips ADD CONSTRAINT departure_buspoints_fk FOREIGN KEY (departure_buspoint_id)
