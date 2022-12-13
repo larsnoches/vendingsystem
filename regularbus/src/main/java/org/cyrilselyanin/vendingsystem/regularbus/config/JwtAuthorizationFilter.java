@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.JwtUtils;
 import org.springframework.http.HttpHeaders;
@@ -45,18 +46,26 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		jwtToken = authHeader.substring(7);
-		username = jwtUtils.extractUsername(jwtToken);
+		try {
+			jwtToken = authHeader.substring(7);
+			username = jwtUtils.extractUsername(jwtToken);
 
-		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-			if (Boolean.TRUE.equals(jwtUtils.isTokenValid(jwtToken, userDetails))) {
-				UsernamePasswordAuthenticationToken authToken =
-						new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-				authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(authToken);
+				if (Boolean.TRUE.equals(jwtUtils.isTokenValid(jwtToken, userDetails))) {
+					UsernamePasswordAuthenticationToken authToken =
+							new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+					authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(authToken);
+				}
+//				else if (jwtUtils.isTokenExpired(jwtToken)) {
+//					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//				}
 			}
+		} catch (ExpiredJwtException ex) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			return;
 		}
 		filterChain.doFilter(request, response);
 	}

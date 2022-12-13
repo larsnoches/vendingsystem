@@ -56,7 +56,7 @@ public class AuthenticationController {
 	}
 
 	@GetMapping("/token/refresh")
-	public AuthenticationResponseDto refreshToken(HttpServletRequest request, HttpServletResponse response) {
+	public AuthenticationResponseDto refreshToken(HttpServletRequest request) {
 		final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 		if (authHeader == null || !authHeader.startsWith("Bearer")) {
 			log.error("Error with refresh null token");
