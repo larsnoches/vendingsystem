@@ -15,6 +15,7 @@ public class GetUserResponseDto {
 	private String firstname;
 	private String middlename;
 	private Boolean enabled;
-	private String userRole;
+//	private String userRole;
+	private Boolean isManager;
 
 }

@@ -2,6 +2,7 @@ package org.cyrilselyanin.vendingsystem.regularbus.helper;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.User;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.UserRole;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.CuUserRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationResponseDto;
@@ -13,7 +14,10 @@ import org.springframework.stereotype.Component;
 public class UserDataMapper {
 
 	private final ModelMapper modelMapper;
-	private Converter<UserRole, String> userRoleConverter = r -> r.getSource().name();
+	private Converter<UserRole, Boolean> userRoleConverter = r -> r
+			.getSource()
+			.name()
+			.equals(UserRole.ROLE_MANAGER.name());
 
 	public UserDataMapper() {
 		modelMapper = new ModelMapper();
@@ -25,7 +29,7 @@ public class UserDataMapper {
 
 		modelMapper.createTypeMap(User.class, GetUserResponseDto.class)
 				.addMappings(mapper -> mapper.using(userRoleConverter).map(
-						User::getUserRole, GetUserResponseDto::setUserRole
+						User::getUserRole, GetUserResponseDto::setIsManager
 				));
 	}
 
@@ -38,6 +42,10 @@ public class UserDataMapper {
 	}
 
 	public User fromRegistrationRequestDto(RegistrationRequestDto dto) {
+		return modelMapper.map(dto, User.class);
+	}
+
+	public User fromCuUserRequestDto(CuUserRequestDto dto) {
 		return modelMapper.map(dto, User.class);
 	}
 
