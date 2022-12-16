@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.User;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.UserRole;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.CuUserRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationResponseDto;
@@ -57,19 +58,61 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public User saveUser(User user) {
-		log.info("Saving new user {} to the database", user.getEmail());
-		return userRepo.save(user);
+	public GetUserResponseDto createUser(CuUserRequestDto cuUserRequestDto) {
+		String email = cuUserRequestDto.getEmail();
+		log.info("Saving new user {} to the database", email);
+		userRepo.findByEmail(email)
+				.ifPresent(u -> {
+					log.error("User {} is already exists in the database", email);
+					throw new IllegalStateException(USER_ALREADY_EXISTS_MESSAGE);
+				});
+
+		User user = userDataMapper.fromCuUserRequestDto(cuUserRequestDto);
+		return userDataMapper.toGetUserResponseDto(
+				userRepo.save(user)
+		);
 	}
 
 	@Override
-	public User getUser(String email) {
+	public GetUserResponseDto updateUser(Long id, CuUserRequestDto cuUserRequestDto){
+		log.info("Saving exist user {} to the database", cuUserRequestDto.getEmail());
+		userRepo.findById(id)
+				.orElseThrow(() -> {
+					log.error("User {} not found in the database", id);
+					throw new UsernameNotFoundException(
+							String.format(USER_NOT_FOUND_MESSAGE, id)
+					);
+				});
+
+		User user = userDataMapper.fromCuUserRequestDto(cuUserRequestDto);
+		user.setId(id);
+		return userDataMapper.toGetUserResponseDto(
+				userRepo.save(user)
+		);
+	}
+
+	@Override
+	public GetUserResponseDto getUser(String email) {
 		log.info("Fetching user {}", email);
 		return userRepo.findByEmail(email)
+				.map(userDataMapper::toGetUserResponseDto)
 				.orElseThrow(() -> {
 					log.error("User {} not found in the database", email);
 					throw new UsernameNotFoundException(
 							String.format(USER_NOT_FOUND_MESSAGE, email)
+					);
+				});
+	}
+
+	@Override
+	public GetUserResponseDto getUser(Long id) {
+		log.info("Fetching user {}", id);
+		return userRepo.findById(id)
+				.map(userDataMapper::toGetUserResponseDto)
+				.orElseThrow(() -> {
+					log.error("User {} not found in the database", id);
+					throw new UsernameNotFoundException(
+							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
 				});
 	}
