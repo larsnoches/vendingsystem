@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.controller.auth;
 
 import lombok.RequiredArgsConstructor;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.ChangePasswordRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.CreateUserRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.UpdateUserRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
@@ -89,6 +90,25 @@ public class UserController {
 			@RequestBody @Valid UpdateUserRequestDto updateUserRequestDto
 	) {
 		return userService.updateUserById(id, updateUserRequestDto);
+	}
+
+	@PutMapping("/users/{id}/changepassword")
+	public void changeUserPassword(
+			@NotNull
+			@Min(value = 0L, message = WRONG_USER_ID_ERR_MESSAGE)
+			@PathVariable Long id,
+			@RequestBody @Valid ChangePasswordRequestDto changePasswordRequestDto
+	) {
+		userService.changePassword(id, changePasswordRequestDto);
+	}
+
+	@PostMapping("/users/{id}/remove")
+	public void removeUser(
+			@NotNull
+			@Min(value = 0L, message = WRONG_USER_ID_ERR_MESSAGE)
+			@PathVariable Long id
+	) {
+		userService.removeUser(id);
 	}
 
 }

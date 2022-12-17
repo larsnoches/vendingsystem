@@ -98,8 +98,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
 				});
-		user.setPassword(changePasswordRequestDto.getPassword());
-//		userRepo.save(user);
+		String encodedPassword = bCryptPasswordEncoder
+				.encode(changePasswordRequestDto.getPassword());
+		user.setPassword(encodedPassword);
 	}
 
 	@Override
@@ -131,7 +132,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@Override
 	public Page<GetUserResponseDto> getUsers(Pageable pageable) {
 		log.info("Fetching all users");
-//		return userRepo.findAll(pageable);
 		List<GetUserResponseDto> list = userRepo.findAll(pageable).stream()
 				.map(userDataMapper::toGetUserResponseDto)
 				.collect(Collectors.toList());
