@@ -15,10 +15,12 @@ public class UserDataMapper {
 	private final Converter<UserRole, String> userRoleConverter = r -> r
 			.getSource()
 			.name();
-	private final Converter<UserRole, Boolean> isManagerUserRoleConverter = r -> r
+	private final Converter<UserRole, Boolean> isManagerToUserRoleConverter = r -> r
 			.getSource()
 			.name()
 			.equals(UserRole.ROLE_MANAGER.name());
+	private final Converter<Boolean, UserRole> userRoleToIsManagerConverter = r -> Boolean.TRUE.equals(r
+			.getSource()) ? UserRole.ROLE_MANAGER : UserRole.USER_ROLE;
 
 	public UserDataMapper() {
 		modelMapper = new ModelMapper();
@@ -29,13 +31,16 @@ public class UserDataMapper {
 				));
 
 		modelMapper.createTypeMap(User.class, GetUserResponseDto.class)
-				.addMappings(mapper -> mapper.using(isManagerUserRoleConverter).map(
+				.addMappings(mapper -> mapper.using(isManagerToUserRoleConverter).map(
 						User::getUserRole, GetUserResponseDto::setIsManager
 				));
 
 		TypeMap<UpdateUserRequestDto, User> typeMap = modelMapper.createTypeMap(
 				UpdateUserRequestDto.class, User.class
 		);
+		typeMap.addMappings(mapper -> mapper.using(userRoleToIsManagerConverter).map(
+				UpdateUserRequestDto::getIsManager, User::setUserRole
+		));
 		typeMap.include(CreateUserRequestDto.class, User.class);
 		modelMapper.typeMap(CreateUserRequestDto.class, User.class)
 				.addMapping(CreateUserRequestDto::getPassword, User::setPassword);
