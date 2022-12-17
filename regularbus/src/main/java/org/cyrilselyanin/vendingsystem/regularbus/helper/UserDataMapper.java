@@ -30,18 +30,20 @@ public class UserDataMapper {
 						User::getUserRole, RegistrationResponseDto::setUserRole
 				));
 
-		modelMapper.createTypeMap(User.class, GetUserResponseDto.class)
-				.addMappings(mapper -> mapper.using(isManagerToUserRoleConverter).map(
-						User::getUserRole, GetUserResponseDto::setIsManager
-				));
+		TypeMap<User, GetUserResponseDto> getUserTypeMap = modelMapper.createTypeMap(
+				User.class, GetUserResponseDto.class
+		);
+		getUserTypeMap.addMappings(mapper -> mapper.using(isManagerToUserRoleConverter).map(
+				User::getUserRole, GetUserResponseDto::setIsManager
+		));
 
-		TypeMap<UpdateUserRequestDto, User> typeMap = modelMapper.createTypeMap(
+		TypeMap<UpdateUserRequestDto, User> updateUserTypeMap = modelMapper.createTypeMap(
 				UpdateUserRequestDto.class, User.class
 		);
-		typeMap.addMappings(mapper -> mapper.using(userRoleToIsManagerConverter).map(
+		updateUserTypeMap.addMappings(mapper -> mapper.using(userRoleToIsManagerConverter).map(
 				UpdateUserRequestDto::getIsManager, User::setUserRole
 		));
-		typeMap.include(CreateUserRequestDto.class, User.class);
+		updateUserTypeMap.include(CreateUserRequestDto.class, User.class);
 		modelMapper.typeMap(CreateUserRequestDto.class, User.class)
 				.addMapping(CreateUserRequestDto::getPassword, User::setPassword);
 	}

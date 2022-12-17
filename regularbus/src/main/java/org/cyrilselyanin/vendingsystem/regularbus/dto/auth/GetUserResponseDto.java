@@ -7,15 +7,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class GetUserResponseDto {
+public class GetUserResponseDto extends UpdateUserRequestDto {
 
 	private Long id;
-	private String email;
-	private String lastname;
-	private String firstname;
-	private String middlename;
-	private Boolean enabled;
-//	private String userRole;
-	private Boolean isManager;
+//	private String email;
+//	private String lastname;
+//	private String firstname;
+//	private String middlename;
+//	private Boolean enabled;
+//	private Boolean isManager;
 
 }
