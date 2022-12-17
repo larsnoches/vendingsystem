@@ -2,19 +2,20 @@ package org.cyrilselyanin.vendingsystem.regularbus.helper;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.User;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.UserRole;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.CuUserRequestDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationRequestDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.*;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserDataMapper {
 
 	private final ModelMapper modelMapper;
-	private Converter<UserRole, Boolean> userRoleConverter = r -> r
+	private final Converter<UserRole, String> userRoleConverter = r -> r
+			.getSource()
+			.name();
+	private final Converter<UserRole, Boolean> isManagerUserRoleConverter = r -> r
 			.getSource()
 			.name()
 			.equals(UserRole.ROLE_MANAGER.name());
@@ -28,9 +29,16 @@ public class UserDataMapper {
 				));
 
 		modelMapper.createTypeMap(User.class, GetUserResponseDto.class)
-				.addMappings(mapper -> mapper.using(userRoleConverter).map(
+				.addMappings(mapper -> mapper.using(isManagerUserRoleConverter).map(
 						User::getUserRole, GetUserResponseDto::setIsManager
 				));
+
+		TypeMap<UpdateUserRequestDto, User> typeMap = modelMapper.createTypeMap(
+				UpdateUserRequestDto.class, User.class
+		);
+		typeMap.include(CreateUserRequestDto.class, User.class);
+		modelMapper.typeMap(CreateUserRequestDto.class, User.class)
+				.addMapping(CreateUserRequestDto::getPassword, User::setPassword);
 	}
 
 	public RegistrationResponseDto toRegistrationResponseDto(User user) {
@@ -45,7 +53,11 @@ public class UserDataMapper {
 		return modelMapper.map(dto, User.class);
 	}
 
-	public User fromCuUserRequestDto(CuUserRequestDto dto) {
+	public User fromCreateUserRequestDto(CreateUserRequestDto dto) {
+		return modelMapper.map(dto, User.class);
+	}
+
+	public User fromUpdateUserRequestDto(UpdateUserRequestDto dto) {
 		return modelMapper.map(dto, User.class);
 	}
 
