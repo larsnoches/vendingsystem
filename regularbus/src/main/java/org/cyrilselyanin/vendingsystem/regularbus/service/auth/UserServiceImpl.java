@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.User;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.UserRole;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.CuUserRequestDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationRequestDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.RegistrationResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.*;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.UserDataMapper;
 import org.cyrilselyanin.vendingsystem.regularbus.repository.auth.UserRepository;
 import org.springframework.data.domain.Page;
@@ -15,7 +12,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +33,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	private final UserDataMapper userDataMapper;
 
 	@Override
-	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String email) {
 		User user = userRepo.findByEmail(email)
 				.orElseThrow(() -> {
 					log.error("User {} not found in the database", email);
-					throw new UsernameNotFoundException(
+					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, email)
 					);
 				});
@@ -58,8 +54,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	}
 
 	@Override
-	public GetUserResponseDto createUser(CuUserRequestDto cuUserRequestDto) {
-		String email = cuUserRequestDto.getEmail();
+	public GetUserResponseDto createUser(CreateUserRequestDto createUserRequestDto) {
+		String email = createUserRequestDto.getEmail();
 		log.info("Saving new user {} to the database", email);
 		userRepo.findByEmail(email)
 				.ifPresent(u -> {
@@ -67,28 +63,43 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 					throw new IllegalStateException(USER_ALREADY_EXISTS_MESSAGE);
 				});
 
-		User user = userDataMapper.fromCuUserRequestDto(cuUserRequestDto);
+		User user = userDataMapper.fromCreateUserRequestDto(createUserRequestDto);
 		return userDataMapper.toGetUserResponseDto(
 				userRepo.save(user)
 		);
 	}
 
 	@Override
-	public GetUserResponseDto updateUser(Long id, CuUserRequestDto cuUserRequestDto){
-		log.info("Saving exist user {} to the database", cuUserRequestDto.getEmail());
-		userRepo.findById(id)
+	public GetUserResponseDto updateUserById(Long id, UpdateUserRequestDto updateUserRequestDto){
+		log.info("Saving exist user {} to the database", updateUserRequestDto.getEmail());
+		User exist = userRepo.findById(id)
 				.orElseThrow(() -> {
 					log.error("User {} not found in the database", id);
-					throw new UsernameNotFoundException(
+					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
 				});
 
-		User user = userDataMapper.fromCuUserRequestDto(cuUserRequestDto);
-		user.setId(id);
+		User user = userDataMapper.fromUpdateUserRequestDto(updateUserRequestDto);
+		user.setId(exist.getId());
+		user.setPassword(exist.getPassword());
 		return userDataMapper.toGetUserResponseDto(
 				userRepo.save(user)
 		);
+	}
+
+	@Override
+	public void changePassword(Long id, ChangePasswordRequestDto changePasswordRequestDto) {
+		log.info("Change pwd for exist user {}", id);
+		User user = userRepo.findById(id)
+				.orElseThrow(() -> {
+					log.error("User {} not found in the database", id);
+					throw new IllegalStateException(
+							String.format(USER_NOT_FOUND_MESSAGE, id)
+					);
+				});
+		user.setPassword(changePasswordRequestDto.getPassword());
+//		userRepo.save(user);
 	}
 
 	@Override
@@ -98,7 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.map(userDataMapper::toGetUserResponseDto)
 				.orElseThrow(() -> {
 					log.error("User {} not found in the database", email);
-					throw new UsernameNotFoundException(
+					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, email)
 					);
 				});
@@ -111,7 +122,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.map(userDataMapper::toGetUserResponseDto)
 				.orElseThrow(() -> {
 					log.error("User {} not found in the database", id);
-					throw new UsernameNotFoundException(
+					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
 				});
@@ -145,6 +156,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		userRepo.save(user);
 
 		return userDataMapper.toRegistrationResponseDto(user);
+	}
+
+	@Override
+	public void removeUser(Long id) {
+		log.info("Removing user {}", id);
+		userRepo.findById(id)
+				.orElseThrow(() -> {
+					log.error("User {} not found in the database", id);
+					throw new IllegalStateException(
+							String.format(USER_NOT_FOUND_MESSAGE, id)
+					);
+				});
+		userRepo.deleteById(id);
 	}
 
 }
