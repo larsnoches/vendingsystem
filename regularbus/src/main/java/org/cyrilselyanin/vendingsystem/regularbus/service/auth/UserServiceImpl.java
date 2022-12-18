@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
 	private static final String USER_NOT_FOUND_MESSAGE = "Пользователь %s не найден в базе данных.";
+	private static final String USER_NOT_FOUND_LOG_MESSAGE = "User {} not found in the database";
 	private static final String USER_ALREADY_EXISTS_MESSAGE = "Такой пользователь уже зарегистрирован.";
 
 	private final UserRepository userRepo;
@@ -36,12 +36,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	public UserDetails loadUserByUsername(String email) {
 		User user = userRepo.findByEmail(email)
 				.orElseThrow(() -> {
-					log.error("User {} not found in the database", email);
+					log.error(USER_NOT_FOUND_LOG_MESSAGE, email);
 					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, email)
 					);
 				});
-		log.info("User {} found in the database", email);
+		log.info(USER_NOT_FOUND_LOG_MESSAGE, email);
 		return new org.springframework.security.core.userdetails.User(
 				user.getEmail(),
 				user.getPassword(),
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		log.info("Saving exist user {} to the database", updateUserRequestDto.getEmail());
 		User exist = userRepo.findById(id)
 				.orElseThrow(() -> {
-					log.error("User {} not found in the database", id);
+					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		log.info("Change pwd for exist user {}", id);
 		User user = userRepo.findById(id)
 				.orElseThrow(() -> {
-					log.error("User {} not found in the database", id);
+					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return userRepo.findByEmail(email)
 				.map(userDataMapper::toGetUserResponseDto)
 				.orElseThrow(() -> {
-					log.error("User {} not found in the database", email);
+					log.error(USER_NOT_FOUND_LOG_MESSAGE, email);
 					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, email)
 					);
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		return userRepo.findById(id)
 				.map(userDataMapper::toGetUserResponseDto)
 				.orElseThrow(() -> {
-					log.error("User {} not found in the database", id);
+					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
@@ -132,10 +132,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 	@Override
 	public Page<GetUserResponseDto> getUsers(Pageable pageable) {
 		log.info("Fetching all users");
-		List<GetUserResponseDto> list = userRepo.findAll(pageable).stream()
+		Page<User> usersPage = userRepo.findAll(pageable);
+		List<GetUserResponseDto> list = usersPage.stream()
 				.map(userDataMapper::toGetUserResponseDto)
-				.collect(Collectors.toList());
-		return new PageImpl<>(list);
+				.toList();
+		return new PageImpl<>(list, pageable, usersPage.getTotalElements());
 	}
 
 	@Override
@@ -163,7 +164,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		log.info("Removing user {}", id);
 		userRepo.findById(id)
 				.orElseThrow(() -> {
-					log.error("User {} not found in the database", id);
+					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
 							String.format(USER_NOT_FOUND_MESSAGE, id)
 					);
