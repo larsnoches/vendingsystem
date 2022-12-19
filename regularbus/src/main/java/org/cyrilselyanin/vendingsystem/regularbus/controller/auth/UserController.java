@@ -102,7 +102,7 @@ public class UserController {
 		userService.changePassword(id, changePasswordRequestDto);
 	}
 
-	@PostMapping("/users/{id}/remove")
+	@DeleteMapping("/users/{id}/remove")
 	public void removeUser(
 			@NotNull
 			@Min(value = 0L, message = WRONG_USER_ID_ERR_MESSAGE)

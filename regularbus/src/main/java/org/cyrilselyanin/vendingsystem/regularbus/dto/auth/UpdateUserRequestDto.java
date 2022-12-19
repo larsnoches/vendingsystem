@@ -36,7 +36,7 @@ public class UpdateUserRequestDto {
 			message = "Отчество должно быть не более 255 символов")
 	private String middlename;
 
-	private Boolean enabled = true;
+	private Boolean isEnabled = true;
 	private Boolean isManager = false;
 
 }
