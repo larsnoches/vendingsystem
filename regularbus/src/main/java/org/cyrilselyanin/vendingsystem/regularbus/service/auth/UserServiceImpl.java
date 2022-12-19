@@ -10,6 +10,8 @@ import org.cyrilselyanin.vendingsystem.regularbus.repository.auth.UserRepository
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -83,6 +85,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		User user = userDataMapper.fromUpdateUserRequestDto(updateUserRequestDto);
 		user.setId(exist.getId());
 		user.setPassword(exist.getPassword());
+
+		Authentication authentication = SecurityContextHolder
+				.getContext()
+				.getAuthentication();
+		boolean isManager = authentication.getAuthorities()
+				.stream()
+				.anyMatch(a -> a.getAuthority().equals("ROLE_MANAGER"));
+
+		// only manager could manage others
+		if (Boolean.FALSE.equals(isManager)) {
+			user.setEnabled(exist.getEnabled());
+			user.setUserRole(exist.getUserRole());
+		}
+
 		return userDataMapper.toGetUserResponseDto(
 				userRepo.save(user)
 		);
