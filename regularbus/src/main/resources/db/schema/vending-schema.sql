@@ -5,13 +5,13 @@
 -- Model Author: ---
 -- object: what | type: ROLE --
 -- DROP ROLE IF EXISTS what;
-CREATE ROLE what WITH 
-	SUPERUSER
-	CREATEDB
-	LOGIN
-	REPLICATION
-	BYPASSRLS
-	ENCRYPTED PASSWORD 'masterkey';
+-- CREATE ROLE what WITH
+-- 	SUPERUSER
+-- 	CREATEDB
+-- 	LOGIN
+-- 	REPLICATION
+-- 	BYPASSRLS
+-- 	ENCRYPTED PASSWORD 'masterkey';
 -- ddl-end --
 
 
@@ -20,7 +20,7 @@ CREATE ROLE what WITH
 -- 
 -- object: bus_system | type: DATABASE --
 -- DROP DATABASE IF EXISTS bus_system;
-CREATE DATABASE bus_system;
+-- CREATE DATABASE bus_system;
 -- ddl-end --
 
 
