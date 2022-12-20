@@ -27,6 +27,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService, UserDetailsService {
 
 	private static final String USER_NOT_FOUND_MESSAGE = "Пользователь %s не найден в базе данных.";
+	private static final String USER_ID_NOT_FOUND_MESSAGE = "Пользователь %d не найден в базе данных.";
 	private static final String USER_NOT_FOUND_LOG_MESSAGE = "User {} not found in the database";
 	private static final String USER_ALREADY_EXISTS_MESSAGE = "Такой пользователь уже зарегистрирован.";
 
@@ -78,7 +79,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.orElseThrow(() -> {
 					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
-							String.format(USER_NOT_FOUND_MESSAGE, id)
+							String.format(USER_ID_NOT_FOUND_MESSAGE, id)
 					);
 				});
 
@@ -111,7 +112,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.orElseThrow(() -> {
 					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
-							String.format(USER_NOT_FOUND_MESSAGE, id)
+							String.format(USER_ID_NOT_FOUND_MESSAGE, id)
 					);
 				});
 		String encodedPassword = bCryptPasswordEncoder
@@ -140,7 +141,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.orElseThrow(() -> {
 					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
-							String.format(USER_NOT_FOUND_MESSAGE, id)
+							String.format(USER_ID_NOT_FOUND_MESSAGE, id)
 					);
 				});
 	}
@@ -182,7 +183,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 				.orElseThrow(() -> {
 					log.error(USER_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
-							String.format(USER_NOT_FOUND_MESSAGE, id)
+							String.format(USER_ID_NOT_FOUND_MESSAGE, id)
 					);
 				});
 		userRepo.deleteById(id);
