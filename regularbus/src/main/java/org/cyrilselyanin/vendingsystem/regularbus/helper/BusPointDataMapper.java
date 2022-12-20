@@ -41,4 +41,8 @@ public class BusPointDataMapper {
 		return modelMapper.map(dto, BusPoint.class);
 	}
 
+	public void fromBasicBusPointRequestDto(BasicBusPointRequestDto dto, BusPoint busPoint) {
+		modelMapper.map(dto, busPoint);
+	}
+
 }
