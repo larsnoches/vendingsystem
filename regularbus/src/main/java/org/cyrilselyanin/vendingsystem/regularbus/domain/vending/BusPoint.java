@@ -1,9 +1,10 @@
-package org.cyrilselyanin.vendingsystem.regularbus.domain;
+package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,25 +30,25 @@ public class BusPoint {
     @Column(name = "buspoint_id", nullable = false)
     private Long id;
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Имя не может быть пустым")
     @Size(
             min = 2,
             max = 255,
-            message = "Name must be between 2 and 255 characters")
+            message = "Имя должно быть от 2 до 255 символов")
     @Column(name = "buspoint_name", length = 255, nullable = false)
     private String name;
 
-    @NotBlank(message = "Address cannot be empty")
+    @NotBlank(message = "Адрес не может быть пустым")
     @Size(
             min = 2,
             max = 255,
-            message = "Address must be between 2 and 255 characters")
+            message = "Адрес должен быть от 2 до 255 символов")
     @Column(name = "buspoint_address", length = 255, nullable = false)
     private String address;
 
-    @NotNull(message = "Bus point type isn't set")
-    @ManyToOne
-    @JoinColumn(name = "buspoint_type_id", nullable = false)
+    @NotNull(message = "Тип остановочного пункта не может быть пустым")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "buspoint_type", nullable = false)
     private BusPointType busPointType;
 
     @OneToMany(mappedBy = "departureBusPoint")

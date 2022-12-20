@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class UserDataMapper {
 
 	private final ModelMapper modelMapper;
-	private final Converter<UserRole, String> userRoleConverter = r -> r
+	private final Converter<UserRole, String> userRoleToStringConverter = r -> r
 			.getSource()
 			.name();
 	private final Converter<UserRole, Boolean> isManagerToUserRoleConverter = r -> r
@@ -26,7 +26,7 @@ public class UserDataMapper {
 		modelMapper = new ModelMapper();
 
 		modelMapper.createTypeMap(User.class, RegistrationResponseDto.class)
-				.addMappings(mapper -> mapper.using(userRoleConverter).map(
+				.addMappings(mapper -> mapper.using(userRoleToStringConverter).map(
 						User::getUserRole, RegistrationResponseDto::setUserRole
 				));
 

@@ -5,13 +5,13 @@
 -- Model Author: ---
 -- object: what | type: ROLE --
 -- DROP ROLE IF EXISTS what;
--- CREATE ROLE what WITH
--- 	SUPERUSER
--- 	CREATEDB
--- 	LOGIN
--- 	REPLICATION
--- 	BYPASSRLS
--- 	ENCRYPTED PASSWORD 'masterkey';
+CREATE ROLE what WITH 
+	SUPERUSER
+	CREATEDB
+	LOGIN
+	REPLICATION
+	BYPASSRLS
+	ENCRYPTED PASSWORD 'masterkey';
 -- ddl-end --
 
 
@@ -20,39 +20,9 @@
 -- 
 -- object: bus_system | type: DATABASE --
 -- DROP DATABASE IF EXISTS bus_system;
--- CREATE DATABASE bus_system;
+CREATE DATABASE bus_system;
 -- ddl-end --
 
-
--- object: public.seats_states_seq | type: SEQUENCE --
--- DROP SEQUENCE IF EXISTS public.seats_states_seq CASCADE;
-CREATE SEQUENCE public.seats_states_seq
-	INCREMENT BY 1
-	MINVALUE 0
-	MAXVALUE 9223372036854775807
-	START WITH 1
-	CACHE 1
-	NO CYCLE
-	OWNED BY NONE;
-
--- ddl-end --
-ALTER SEQUENCE public.seats_states_seq OWNER TO what;
--- ddl-end --
-
--- object: public.buspoints_types_seq | type: SEQUENCE --
--- DROP SEQUENCE IF EXISTS public.buspoints_types_seq CASCADE;
-CREATE SEQUENCE public.buspoints_types_seq
-	INCREMENT BY 1
-	MINVALUE 0
-	MAXVALUE 9223372036854775807
-	START WITH 1
-	CACHE 1
-	NO CYCLE
-	OWNED BY NONE;
-
--- ddl-end --
-ALTER SEQUENCE public.buspoints_types_seq OWNER TO what;
--- ddl-end --
 
 -- object: public.buspoints_seq | type: SEQUENCE --
 -- DROP SEQUENCE IF EXISTS public.buspoints_seq CASCADE;
@@ -67,17 +37,6 @@ CREATE SEQUENCE public.buspoints_seq
 
 -- ddl-end --
 ALTER SEQUENCE public.buspoints_seq OWNER TO what;
--- ddl-end --
-
--- object: public.buspoints_types | type: TABLE --
--- DROP TABLE IF EXISTS public.buspoints_types CASCADE;
-CREATE TABLE public.buspoints_types (
-	buspoint_type_id bigint NOT NULL DEFAULT nextval('public.buspoints_types_seq'::regclass),
-	buspoint_type_name varchar(255) NOT NULL,
-	CONSTRAINT buspoints_types_pk PRIMARY KEY (buspoint_type_id)
-);
--- ddl-end --
-ALTER TABLE public.buspoints_types OWNER TO what;
 -- ddl-end --
 
 -- object: public.seats_seq | type: SEQUENCE --
@@ -205,7 +164,7 @@ CREATE TABLE public.buspoints (
 	buspoint_id bigint NOT NULL DEFAULT nextval('public.buspoints_seq'::regclass),
 	buspoint_name varchar(255) NOT NULL,
 	buspoint_address varchar(255) NOT NULL,
-	buspoint_type_id bigint,
+	buspoint_type varchar(255) NOT NULL,
 	CONSTRAINT buspoints_pk PRIMARY KEY (buspoint_id)
 );
 -- ddl-end --
@@ -248,13 +207,6 @@ CREATE TABLE public.carriers (
 );
 -- ddl-end --
 ALTER TABLE public.carriers OWNER TO what;
--- ddl-end --
-
--- object: buspoints_types_fk | type: CONSTRAINT --
--- ALTER TABLE public.buspoints DROP CONSTRAINT IF EXISTS buspoints_types_fk CASCADE;
-ALTER TABLE public.buspoints ADD CONSTRAINT buspoints_types_fk FOREIGN KEY (buspoint_type_id)
-REFERENCES public.buspoints_types (buspoint_type_id) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: carriers_fk | type: CONSTRAINT --

@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.*;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusPoint;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class RestConfig implements RepositoryRestConfigurer {
         config.exposeIdsFor(
                 Carrier.class,
                 Bus.class,
-                BusPointType.class,
+//                BusPointType_cl.class,
                 Fare.class,
                 BusPoint.class,
                 BusTrip.class,
