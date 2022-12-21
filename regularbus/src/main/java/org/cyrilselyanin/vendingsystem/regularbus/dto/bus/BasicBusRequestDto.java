@@ -46,6 +46,7 @@ public class BasicBusRequestDto {
 			message = "Государственный номер должен быть от 4 до 16 символов")
 	private String regNumber;
 
+	// carrier id only
 	@NotNull(message = "Перевозчик не указан")
 	private Long carrier;
 

@@ -31,7 +31,7 @@ public class BusServiceImpl implements BusService {
 	public GetBusResponseDto createBus(BasicBusRequestDto dto) {
 		log.info("Create buspoint {}", dto.getMakeModel());
 		Bus bus = busDataMapper.fromBasicBusRequestDto(dto);
-		bus.setId(null);
+//		bus.setId(null);
 		return busDataMapper.toGetBusResponseDto(
 				busRepo.save(bus)
 		);

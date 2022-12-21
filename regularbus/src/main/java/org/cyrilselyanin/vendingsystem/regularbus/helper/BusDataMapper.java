@@ -15,6 +15,7 @@ public class BusDataMapper {
 	private final Converter<Long, Carrier> carrierIdToCarrierConverter = r -> new Carrier(
 			r.getSource(), null, null, null, null, null
 	);
+	private final Converter<Carrier, Long> carrierToCarrierIdConverter = r -> r.getSource().getId();
 
 	public BusDataMapper() {
 		modelMapper = new ModelMapper();
@@ -22,6 +23,11 @@ public class BusDataMapper {
 		modelMapper.createTypeMap(BasicBusRequestDto.class, Bus.class)
 				.addMappings(mapper -> mapper.using(carrierIdToCarrierConverter).map(
 						BasicBusRequestDto::getCarrier, Bus::setCarrier
+				));
+
+		modelMapper.createTypeMap(Bus.class, GetBusResponseDto.class)
+				.addMappings(mapper -> mapper.using(carrierToCarrierIdConverter).map(
+						Bus::getCarrier, GetBusResponseDto::setCarrier
 				));
 	}
 
