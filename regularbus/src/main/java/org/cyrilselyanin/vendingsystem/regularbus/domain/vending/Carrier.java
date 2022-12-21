@@ -1,7 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
 import lombok.*;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.Fare;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;

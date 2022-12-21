@@ -6,7 +6,7 @@ import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Bus;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bus.BasicBusRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bus.GetBusResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.BusDataMapper;
-import org.cyrilselyanin.vendingsystem.regularbus.repository.BusRepository;
+import org.cyrilselyanin.vendingsystem.regularbus.repository.vending.BusRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,6 @@ public class BusServiceImpl implements BusService {
 	public GetBusResponseDto createBus(BasicBusRequestDto dto) {
 		log.info("Create buspoint {}", dto.getMakeModel());
 		Bus bus = busDataMapper.fromBasicBusRequestDto(dto);
-//		bus.setId(null);
 		return busDataMapper.toGetBusResponseDto(
 				busRepo.save(bus)
 		);

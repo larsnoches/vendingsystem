@@ -1,4 +1,4 @@
-package org.cyrilselyanin.vendingsystem.regularbus.repository;
+package org.cyrilselyanin.vendingsystem.regularbus.repository.vending;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Bus;
 import org.springframework.data.domain.Page;

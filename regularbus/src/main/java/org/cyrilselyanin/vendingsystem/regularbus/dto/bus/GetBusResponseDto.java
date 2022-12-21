@@ -16,13 +16,5 @@ import lombok.Setter;
 public class GetBusResponseDto extends BasicBusRequestDto {
 
 	private Long id;
-//	private String makeModel;
-//	private String manufacturerCountry;
-//	private Integer yearOfManufacture;
-//	private Integer seatCount;
-//	private String regNumber;
-//	private GetCarrierResponseDto carrier;
-
-
 
 }

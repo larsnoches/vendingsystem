@@ -1,9 +1,8 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.*;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Bus;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusPoint;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Carrier;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.Seat;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.stereotype.Component;
@@ -17,11 +16,11 @@ public class RestConfig implements RepositoryRestConfigurer {
             CorsRegistry cors
     ) {
         config.exposeIdsFor(
-                Carrier.class,
-                Bus.class,
+//                Carrier.class,
+//                Bus.class,
 //                BusPointType_cl.class,
-                Fare.class,
-                BusPoint.class,
+//                Fare.class,
+//                BusPoint.class,
                 BusTrip.class,
                 Seat.class,
                 Ticket.class
