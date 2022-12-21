@@ -29,7 +29,7 @@ public class BusServiceImpl implements BusService {
 
 	@Override
 	public GetBusResponseDto createBus(BasicBusRequestDto dto) {
-		log.info("Create buspoint {}", dto.getMakeModel());
+		log.info("Create bus {}", dto.getMakeModel());
 		Bus bus = busDataMapper.fromBasicBusRequestDto(dto);
 		return busDataMapper.toGetBusResponseDto(
 				busRepo.save(bus)
@@ -38,7 +38,7 @@ public class BusServiceImpl implements BusService {
 
 	@Override
 	public GetBusResponseDto getBus(Long id) {
-		log.info("Fetching buspoint {}", id);
+		log.info("Fetching bus {}", id);
 		return busRepo.findById(id)
 				.map(busDataMapper::toGetBusResponseDto)
 				.orElseThrow(() -> {
@@ -51,7 +51,7 @@ public class BusServiceImpl implements BusService {
 
 	@Override
 	public Page<GetBusResponseDto> getBusesByCarrierId(Long carrierId, Pageable pageable) {
-		log.info("Fetching all buspoints");
+		log.info("Fetching all buses");
 		Page<Bus> busPage = busRepo.findAllByCarrierId(carrierId, pageable);
 		List<GetBusResponseDto> list = busPage.stream()
 				.map(busDataMapper::toGetBusResponseDto)
