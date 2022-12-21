@@ -29,7 +29,7 @@ public class CarrierServiceImpl implements CarrierService {
 
 	@Override
 	public GetCarrierResponseDto createCarrier(BasicCarrierRequestDto dto) {
-		log.info("Create buspoint {}", dto.getName());
+		log.info("Create carrier {}", dto.getName());
 		Carrier carrier = carrierDataMapper.fromBasicCarrierRequestDto(dto);
 		return carrierDataMapper.toGetCarrierResponseDto(
 				carrierRepo.save(carrier)
@@ -38,7 +38,7 @@ public class CarrierServiceImpl implements CarrierService {
 
 	@Override
 	public GetCarrierResponseDto getCarrier(Long id) {
-		log.info("Fetching buspoint {}", id);
+		log.info("Fetching carrier {}", id);
 		return carrierRepo.findById(id)
 				.map(carrierDataMapper::toGetCarrierResponseDto)
 				.orElseThrow(() -> {
@@ -51,7 +51,7 @@ public class CarrierServiceImpl implements CarrierService {
 
 	@Override
 	public Page<GetCarrierResponseDto> getCarriers(Pageable pageable) {
-		log.info("Fetching all buspoints");
+		log.info("Fetching all carriers");
 		Page<Carrier> carrierPage = carrierRepo.findAll(pageable);
 		List<GetCarrierResponseDto> list = carrierPage.stream()
 				.map(carrierDataMapper::toGetCarrierResponseDto)
@@ -61,7 +61,7 @@ public class CarrierServiceImpl implements CarrierService {
 
 	@Override
 	public GetCarrierResponseDto updateCarrier(Long id, BasicCarrierRequestDto dto) {
-		log.info("Saving exist buspoint {} to the database", dto.getName());
+		log.info("Saving exist carrier {} to the database", dto.getName());
 		Carrier exist = carrierRepo.findById(id)
 				.orElseThrow(() -> {
 					log.error(CARRIER_NOT_FOUND_LOG_MESSAGE, id);
@@ -80,7 +80,7 @@ public class CarrierServiceImpl implements CarrierService {
 
 	@Override
 	public void removeCarrier(Long id) {
-		log.info("Removing buspoint {}", id);
+		log.info("Removing carrier {}", id);
 		carrierRepo.findById(id)
 				.orElseThrow(() -> {
 					log.error(CARRIER_NOT_FOUND_LOG_MESSAGE, id);
