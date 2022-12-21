@@ -1,4 +1,4 @@
-package org.cyrilselyanin.vendingsystem.regularbus.service;
+package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,7 +6,7 @@ import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusPoint;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.BasicBusPointRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.GetBusPointResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.BusPointDataMapper;
-import org.cyrilselyanin.vendingsystem.regularbus.repository.BusPointRepository;
+import org.cyrilselyanin.vendingsystem.regularbus.repository.vending.BusPointRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -69,14 +69,10 @@ public class BusPointServiceImpl implements BusPointService {
 							String.format(BUS_POINT_NOT_FOUND_MESSAGE, id)
 					);
 				});
-
 		busPointDataMapper.fromBasicBusPointRequestDto(dto, exist);
-//		BusPoint busPoint = busPointDataMapper.fromBasicBusPointRequestDto(dto);
-
 
 		return busPointDataMapper.toGetBusPointResponseDto(
 				exist
-//				busPointRepo.save(busPoint)
 		);
 	}
 

@@ -1,7 +1,9 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.*;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Bus;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusPoint;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Carrier;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.stereotype.Component;

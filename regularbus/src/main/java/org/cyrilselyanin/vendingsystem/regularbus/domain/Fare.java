@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain;
 
 import lombok.*;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Carrier;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;

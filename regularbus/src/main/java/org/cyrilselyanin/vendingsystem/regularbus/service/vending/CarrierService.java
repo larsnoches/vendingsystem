@@ -1,4 +1,4 @@
-package org.cyrilselyanin.vendingsystem.regularbus.service;
+package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.BasicCarrierRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.GetCarrierResponseDto;

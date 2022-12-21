@@ -1,12 +1,12 @@
-package org.cyrilselyanin.vendingsystem.regularbus.service;
+package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.Carrier;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Carrier;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.BasicCarrierRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.GetCarrierResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.CarrierDataMapper;
-import org.cyrilselyanin.vendingsystem.regularbus.repository.CarrierRepository;
+import org.cyrilselyanin.vendingsystem.regularbus.repository.vending.CarrierRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

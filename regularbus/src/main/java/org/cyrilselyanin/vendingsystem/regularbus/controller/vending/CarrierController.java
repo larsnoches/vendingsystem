@@ -3,7 +3,7 @@ package org.cyrilselyanin.vendingsystem.regularbus.controller.vending;
 import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.BasicCarrierRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.GetCarrierResponseDto;
-import org.cyrilselyanin.vendingsystem.regularbus.service.CarrierService;
+import org.cyrilselyanin.vendingsystem.regularbus.service.vending.CarrierService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

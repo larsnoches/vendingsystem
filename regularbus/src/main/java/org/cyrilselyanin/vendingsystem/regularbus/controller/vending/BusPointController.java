@@ -3,7 +3,7 @@ package org.cyrilselyanin.vendingsystem.regularbus.controller.vending;
 import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.BasicBusPointRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.GetBusPointResponseDto;
-import org.cyrilselyanin.vendingsystem.regularbus.service.BusPointService;
+import org.cyrilselyanin.vendingsystem.regularbus.service.vending.BusPointService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

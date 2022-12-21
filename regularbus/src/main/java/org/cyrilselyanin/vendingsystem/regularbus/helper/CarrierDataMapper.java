@@ -1,6 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.helper;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.Carrier;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Carrier;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.BasicCarrierRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.GetCarrierResponseDto;
 import org.modelmapper.ModelMapper;

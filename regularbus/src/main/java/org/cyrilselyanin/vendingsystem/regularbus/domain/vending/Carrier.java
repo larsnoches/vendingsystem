@@ -1,9 +1,11 @@
-package org.cyrilselyanin.vendingsystem.regularbus.domain;
+package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
 import lombok.*;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.Fare;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -51,8 +53,8 @@ public class Carrier {
     private String address;
 
     @OneToMany(mappedBy = "carrier")
-    private Set<Bus> buses;
+    private Set<Bus> buses = new HashSet<>();
 
     @OneToMany(mappedBy = "carrier")
-    private Set<Fare> fares;
+    private Set<Fare> fares = new HashSet<>();
 }

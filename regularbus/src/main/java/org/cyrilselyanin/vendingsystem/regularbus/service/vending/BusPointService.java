@@ -1,4 +1,4 @@
-package org.cyrilselyanin.vendingsystem.regularbus.service;
+package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
 import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.BasicBusPointRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.GetBusPointResponseDto;

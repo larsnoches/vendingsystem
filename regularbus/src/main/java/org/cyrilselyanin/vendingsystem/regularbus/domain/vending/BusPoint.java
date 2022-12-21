@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -52,8 +53,8 @@ public class BusPoint {
     private BusPointType busPointType;
 
     @OneToMany(mappedBy = "departureBusPoint")
-    private Set<BusTrip> departureBusTrips;
+    private Set<BusTrip> departureBusTrips = new HashSet<>();
 
     @OneToMany(mappedBy = "arrivalBusPoint")
-    private Set<BusTrip> arrivalBusTrips;
+    private Set<BusTrip> arrivalBusTrips = new HashSet<>();
 }
