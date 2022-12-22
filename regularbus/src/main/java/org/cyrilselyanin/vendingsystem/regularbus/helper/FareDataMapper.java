@@ -13,7 +13,7 @@ public class FareDataMapper {
 
 	private final ModelMapper modelMapper;
 	private final Converter<Long, Carrier> carrierIdToCarrierConverter = r -> new Carrier(
-			r.getSource(), null, null, null, null, null
+			r.getSource(), null, null, null, null, null, null
 	);
 	private final Converter<Carrier, Long> carrierToCarrierIdConverter = r -> r.getSource().getId();
 

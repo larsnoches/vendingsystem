@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;

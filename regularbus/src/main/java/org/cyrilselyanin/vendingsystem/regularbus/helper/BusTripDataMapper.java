@@ -1,0 +1,130 @@
+package org.cyrilselyanin.vendingsystem.regularbus.helper;
+
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.*;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.bus.BasicBusRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.bus.GetBusResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.BasicBusPointRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.buspoint.GetBusPointResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.BasicBusTripRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.BasicCarrierRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.carrier.GetCarrierResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.fare.BasicFareRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.fare.GetFareResponseDto;
+import org.modelmapper.Converter;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+@Component
+public class BusTripDataMapper {
+
+	private final ModelMapper modelMapper;
+
+	private static final String datetimePattern = "dd.MM.yyyy HH:mm";
+	private static final String datePattern = "dd.MM.yyyy";
+	private static final String timePattern = "HH:mm";
+	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datetimePattern);
+	private final Converter<Timestamp, String> timestampToDateStringConverter = r ->
+			new SimpleDateFormat(datePattern).format(r.getSource());
+	private final Converter<Timestamp, String> timestampToTimeStringConverter = r ->
+			new SimpleDateFormat(timePattern).format(r.getSource());
+	private final Converter<String, Timestamp> datetimeStringToTimestampConverter = r -> {
+		LocalDateTime localDateTime = LocalDateTime.from(formatter.parse(r.getSource()));
+		return Timestamp.valueOf(localDateTime);
+	};
+	private final Converter<BusPoint, GetBusPointResponseDto> busPointToDtoConverter;
+	private final Converter<BasicBusPointRequestDto, BusPoint> busPointFromDtoConverter;
+	private final Converter<Bus, GetBusResponseDto> busToDtoConverter;
+	private final Converter<BasicBusRequestDto, Bus> busFromDtoConverter;
+	private final Converter<Fare, GetFareResponseDto> fareToDtoConverter;
+	private final Converter<BasicFareRequestDto, Fare> fareFromDtoConverter;
+	private final Converter<Carrier, GetCarrierResponseDto> carrierToDtoConverter;
+	private final Converter<BasicCarrierRequestDto, Carrier> carrierFromDtoConverter;
+
+	public BusTripDataMapper(
+			BusPointDataMapper busPointDataMapper,
+			BusDataMapper busDataMapper,
+			FareDataMapper fareDataMapper,
+			CarrierDataMapper carrierDataMapper
+	) {
+		modelMapper = new ModelMapper();
+
+		busPointToDtoConverter = r -> busPointDataMapper.toGetBusPointResponseDto(
+				r.getSource()
+		);
+		busPointFromDtoConverter = r -> busPointDataMapper.fromBasicBusPointRequestDto(
+				r.getSource()
+		);
+
+		busToDtoConverter = r -> busDataMapper.toGetBusResponseDto(r.getSource());
+		busFromDtoConverter = r -> busDataMapper.fromBasicBusRequestDto(r.getSource());
+
+		fareToDtoConverter = r -> fareDataMapper.toGetFareResponseDto(r.getSource());
+		fareFromDtoConverter = r -> fareDataMapper.fromBasicFareRequestDto(r.getSource());
+
+		carrierToDtoConverter = r -> carrierDataMapper.toGetCarrierResponseDto(r.getSource());
+		carrierFromDtoConverter = r -> carrierDataMapper.fromBasicCarrierRequestDto(r.getSource());
+
+		modelMapper.createTypeMap(BusTrip.class, GetBusTripResponseDto.class)
+				.addMappings(mapper -> mapper.using(timestampToDateStringConverter).map(
+						BusTrip::getDepartureDateTime, GetBusTripResponseDto::setDepartureDate
+				))
+				.addMappings(mapper -> mapper.using(timestampToTimeStringConverter).map(
+						BusTrip::getDepartureDateTime, GetBusTripResponseDto::setDepartureTime
+				))
+				.addMappings(mapper -> mapper.using(busPointToDtoConverter).map(
+						BusTrip::getDepartureBusPoint, GetBusTripResponseDto::setDepartureBusPoint
+				))
+				.addMappings(mapper -> mapper.using(busPointToDtoConverter).map(
+						BusTrip::getArrivalBusPoint, GetBusTripResponseDto::setArrivalBusPoint
+				))
+				.addMappings(mapper -> mapper.using(busToDtoConverter).map(
+						BusTrip::getBus, GetBusTripResponseDto::setBus
+				))
+				.addMappings(mapper -> mapper.using(fareToDtoConverter).map(
+						BusTrip::getFare, GetBusTripResponseDto::setFare
+				))
+				.addMappings(mapper -> mapper.using(carrierToDtoConverter).map(
+						BusTrip::getCarrier, GetBusTripResponseDto::setCarrier
+				));
+
+		modelMapper.createTypeMap(BasicBusTripRequestDto.class, BusTrip.class)
+				.addMappings(mapper -> mapper.using(busPointFromDtoConverter).map(
+						BasicBusTripRequestDto::getDepartureBusPoint, BusTrip::setDepartureBusPoint
+				))
+				.addMappings(mapper -> mapper.using(busPointFromDtoConverter).map(
+						BasicBusTripRequestDto::getArrivalBusPoint, BusTrip::setArrivalBusPoint
+				))
+				.addMappings(mapper -> mapper.using(datetimeStringToTimestampConverter).map(
+						BasicBusTripRequestDto::getDepartureDatetime, BusTrip::setDepartureDateTime
+				))
+				.addMappings(mapper -> mapper.using(busFromDtoConverter).map(
+						BasicBusTripRequestDto::getBus, BusTrip::setBus
+				))
+				.addMappings(mapper -> mapper.using(fareFromDtoConverter).map(
+						BasicBusTripRequestDto::getFare, BusTrip::setFare
+				))
+				.addMappings(mapper -> mapper.using(carrierFromDtoConverter).map(
+						BasicBusTripRequestDto::getCarrier, BusTrip::setCarrier
+				));
+
+	}
+
+	public GetBusTripResponseDto toGetBusTripResponseDto(BusTrip busTrip) {
+		return modelMapper.map(busTrip, GetBusTripResponseDto.class);
+	}
+
+	public BusTrip fromBasicBusTripRequestDto(BasicBusTripRequestDto dto) {
+		return modelMapper.map(dto, BusTrip.class);
+	}
+
+	public void fromBasicBusTripRequestDto(BasicBusTripRequestDto dto, BusTrip busTrip) {
+		modelMapper.map(dto, busTrip);
+	}
+
+}

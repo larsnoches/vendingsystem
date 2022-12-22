@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain;
 
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate.TicketValidateBeforeDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

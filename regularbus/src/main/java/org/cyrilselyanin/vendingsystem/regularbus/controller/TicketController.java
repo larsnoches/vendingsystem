@@ -1,6 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.controller;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.BusTripModelAssembler;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.TicketModelAssembler;

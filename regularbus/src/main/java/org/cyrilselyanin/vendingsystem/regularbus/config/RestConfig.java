@@ -1,6 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.Seat;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;

@@ -183,6 +183,7 @@ CREATE TABLE public.bustrips (
 	average_bus_speed integer NOT NULL,
 	bus_id bigint,
 	fare_id bigint,
+	carrier_id bigint,
 	CONSTRAINT bustrips_pk PRIMARY KEY (bustrip_id)
 );
 -- ddl-end --
@@ -315,6 +316,13 @@ CREATE TABLE public.users (
 COMMENT ON TABLE public.users IS E'Пользователи';
 -- ddl-end --
 ALTER TABLE public.users OWNER TO what;
+-- ddl-end --
+
+-- object: carriers_fk | type: CONSTRAINT --
+-- ALTER TABLE public.bustrips DROP CONSTRAINT IF EXISTS carriers_fk CASCADE;
+ALTER TABLE public.bustrips ADD CONSTRAINT carriers_fk FOREIGN KEY (carrier_id)
+REFERENCES public.carriers (carrier_id) MATCH FULL
+ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: departure_buspoints_fk | type: CONSTRAINT --

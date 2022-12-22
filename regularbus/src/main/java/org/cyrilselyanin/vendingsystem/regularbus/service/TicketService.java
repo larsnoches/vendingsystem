@@ -1,6 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.service;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
 
 import java.util.List;

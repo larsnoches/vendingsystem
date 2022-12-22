@@ -3,7 +3,7 @@ package org.cyrilselyanin.vendingsystem.regularbus.helper;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 import org.cyrilselyanin.vendingsystem.regularbus.controller.TicketController;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.SimpleRepresentationModelAssembler;
