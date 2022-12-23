@@ -15,7 +15,7 @@ public interface BusTripService {
 	GetBusTripResponseDto getBusTrip(Long id);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	Page<GetBusTripResponseDto> getBusTripTripsByCarrierId(Long carrierId, Pageable pageable);
+	Page<GetBusTripResponseDto> getBusTripsByCarrierId(Long carrierId, Pageable pageable);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	GetBusTripResponseDto updateBusTrip(Long id, BasicBusTripRequestDto dto);

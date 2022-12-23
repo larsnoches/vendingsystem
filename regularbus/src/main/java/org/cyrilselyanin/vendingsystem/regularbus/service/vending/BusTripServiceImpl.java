@@ -50,8 +50,8 @@ public class BusTripServiceImpl implements BusTripService {
 	}
 
 	@Override
-	public Page<GetBusTripResponseDto> getBusTripTripsByCarrierId(Long carrierId, Pageable pageable) {
-		log.info("Fetching all busTrips");
+	public Page<GetBusTripResponseDto> getBusTripsByCarrierId(Long carrierId, Pageable pageable) {
+		log.info("Fetching all busTrips for carrier {}", carrierId);
 		Page<BusTrip> busTripPage = busTripRepo.findAllByCarrierId(carrierId, pageable);
 		List<GetBusTripResponseDto> list = busTripPage.stream()
 				.map(busTripDataMapper::toGetBusTripResponseDto)
