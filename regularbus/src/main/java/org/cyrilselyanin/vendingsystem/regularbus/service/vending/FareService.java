@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface FareService {
 
 	@PreAuthorize("hasRole('MANAGER')")
-	GetFareResponseDto createFare(BasicFareRequestDto dto);
+	void createFare(BasicFareRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	GetFareResponseDto getFare(Long id);
@@ -18,7 +18,7 @@ public interface FareService {
 	Page<GetFareResponseDto> getFareesByCarrierId(Long carrierId, Pageable pageable);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	GetFareResponseDto updateFare(Long id, BasicFareRequestDto dto);
+	void updateFare(Long id, BasicFareRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	void removeFare(Long id);

@@ -28,12 +28,10 @@ public class FareServiceImpl implements FareService {
 	private final FareDataMapper fareDataMapper;
 
 	@Override
-	public GetFareResponseDto createFare(BasicFareRequestDto dto) {
+	public void createFare(BasicFareRequestDto dto) {
 		log.info("Create fare {}", dto.getName());
 		Fare fare = fareDataMapper.fromBasicFareRequestDto(dto);
-		return fareDataMapper.toGetFareResponseDto(
-				fareRepo.save(fare)
-		);
+		fareRepo.save(fare);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class FareServiceImpl implements FareService {
 	}
 
 	@Override
-	public GetFareResponseDto updateFare(Long id, BasicFareRequestDto dto) {
+	public void updateFare(Long id, BasicFareRequestDto dto) {
 		log.info("Saving exist fare {} to the database", dto.getName());
 		Fare exist = fareRepo.findById(id)
 				.orElseThrow(() -> {
@@ -71,9 +69,6 @@ public class FareServiceImpl implements FareService {
 				});
 
 		fareDataMapper.fromBasicFareRequestDto(dto, exist);
-		return fareDataMapper.toGetFareResponseDto(
-				exist
-		);
 	}
 
 	@Override

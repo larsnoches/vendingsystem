@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface CarrierService {
 
 	@PreAuthorize("hasRole('MANAGER')")
-	GetCarrierResponseDto createCarrier(BasicCarrierRequestDto dto);
+	void createCarrier(BasicCarrierRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	GetCarrierResponseDto getCarrier(Long id);
@@ -18,7 +18,7 @@ public interface CarrierService {
 	Page<GetCarrierResponseDto> getCarriers(Pageable pageable);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	GetCarrierResponseDto updateCarrier(Long id, BasicCarrierRequestDto dto);
+	void updateCarrier(Long id, BasicCarrierRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	void removeCarrier(Long id);

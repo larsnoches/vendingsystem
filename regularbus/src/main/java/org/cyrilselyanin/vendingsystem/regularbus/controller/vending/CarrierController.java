@@ -31,7 +31,7 @@ public class CarrierController {
 	private final CarrierService carrierService;
 
 	@PostMapping("/carriers/create")
-	public ResponseEntity<GetCarrierResponseDto> createCarrier(
+	public ResponseEntity<?> createCarrier(
 			@RequestBody @Valid BasicCarrierRequestDto dto
 	) {
 		try {
@@ -40,9 +40,10 @@ public class CarrierController {
 							.path("/api/v1/carriers/create")
 							.toUriString()
 			);
+			carrierService.createCarrier(dto);
 			return ResponseEntity
 					.created(uri)
-					.body(carrierService.createCarrier(dto));
+					.build();
 		} catch (RuntimeException ex) {
 			log.error("There is a create carrier error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
@@ -74,14 +75,14 @@ public class CarrierController {
 	}
 
 	@PutMapping("/carriers/{id}")
-	public GetCarrierResponseDto updateCarrier(
+	public void updateCarrier(
 			@NotNull
 			@Min(value = 0L, message = WRONG_CARRIER_ID_ERR_MESSAGE)
 			@PathVariable Long id,
 			@RequestBody @Valid BasicCarrierRequestDto dto
 	) {
 		try {
-			return carrierService.updateCarrier(id, dto);
+			carrierService.updateCarrier(id, dto);
 		} catch (RuntimeException ex) {
 			log.error("There is a update carrier error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

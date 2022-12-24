@@ -28,12 +28,10 @@ public class CarrierServiceImpl implements CarrierService {
 	private final CarrierDataMapper carrierDataMapper;
 
 	@Override
-	public GetCarrierResponseDto createCarrier(BasicCarrierRequestDto dto) {
+	public void createCarrier(BasicCarrierRequestDto dto) {
 		log.info("Create carrier {}", dto.getName());
 		Carrier carrier = carrierDataMapper.fromBasicCarrierRequestDto(dto);
-		return carrierDataMapper.toGetCarrierResponseDto(
-				carrierRepo.save(carrier)
-		);
+		carrierRepo.save(carrier);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class CarrierServiceImpl implements CarrierService {
 	}
 
 	@Override
-	public GetCarrierResponseDto updateCarrier(Long id, BasicCarrierRequestDto dto) {
+	public void updateCarrier(Long id, BasicCarrierRequestDto dto) {
 		log.info("Saving exist carrier {} to the database", dto.getName());
 		Carrier exist = carrierRepo.findById(id)
 				.orElseThrow(() -> {
@@ -71,11 +69,6 @@ public class CarrierServiceImpl implements CarrierService {
 				});
 
 		carrierDataMapper.fromBasicCarrierRequestDto(dto, exist);
-
-
-		return carrierDataMapper.toGetCarrierResponseDto(
-				exist
-		);
 	}
 
 	@Override

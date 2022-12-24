@@ -31,7 +31,7 @@ public class BusPointController {
 	private final BusPointService busPointService;
 
 	@PostMapping("/busPoints/create")
-	public ResponseEntity<GetBusPointResponseDto> createBusPoint(
+	public ResponseEntity<?> createBusPoint(
 			@RequestBody @Valid BasicBusPointRequestDto dto
 	) {
 		try {
@@ -40,9 +40,10 @@ public class BusPointController {
 							.path("/api/v1/busPoints/create")
 							.toUriString()
 			);
+			busPointService.createBusPoint(dto);
 			return ResponseEntity
 					.created(uri)
-					.body(busPointService.createBusPoint(dto));
+					.build();
 		} catch (RuntimeException ex) {
 			log.error("There is a create bus point error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
@@ -74,14 +75,14 @@ public class BusPointController {
 	}
 
 	@PutMapping("/busPoints/{id}")
-	public GetBusPointResponseDto updateBusPoint(
+	public void updateBusPoint(
 			@NotNull
 			@Min(value = 0L, message = WRONG_BUSPOINT_ID_ERR_MESSAGE)
 			@PathVariable Long id,
 			@RequestBody @Valid BasicBusPointRequestDto dto
 	) {
 		try {
-			return busPointService.updateBusPoint(id, dto);
+			busPointService.updateBusPoint(id, dto);
 		} catch (RuntimeException ex) {
 			log.error("There is an update bus point error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

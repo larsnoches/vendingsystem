@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface BusService {
 
 	@PreAuthorize("hasRole('MANAGER')")
-	GetBusResponseDto createBus(BasicBusRequestDto dto);
+	void createBus(BasicBusRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	GetBusResponseDto getBus(Long id);
@@ -18,7 +18,7 @@ public interface BusService {
 	Page<GetBusResponseDto> getBusesByCarrierId(Long carrierId, Pageable pageable);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	GetBusResponseDto updateBus(Long id, BasicBusRequestDto dto);
+	void updateBus(Long id, BasicBusRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	void removeBus(Long id);

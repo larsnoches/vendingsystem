@@ -28,12 +28,10 @@ public class BusPointServiceImpl implements BusPointService {
 	private final BusPointDataMapper busPointDataMapper;
 
 	@Override
-	public GetBusPointResponseDto createBusPoint(BasicBusPointRequestDto dto) {
+	public void createBusPoint(BasicBusPointRequestDto dto) {
 		log.info("Create buspoint {}", dto.getName());
 		BusPoint busPoint = busPointDataMapper.fromBasicBusPointRequestDto(dto);
-		return busPointDataMapper.toGetBusPointResponseDto(
-			busPointRepo.save(busPoint)
-		);
+		busPointRepo.save(busPoint);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class BusPointServiceImpl implements BusPointService {
 	}
 
 	@Override
-	public GetBusPointResponseDto updateBusPoint(Long id, BasicBusPointRequestDto dto) {
+	public void updateBusPoint(Long id, BasicBusPointRequestDto dto) {
 		log.info("Saving exist buspoint {} to the database", dto.getName());
 		BusPoint exist = busPointRepo.findById(id)
 				.orElseThrow(() -> {
@@ -70,10 +68,6 @@ public class BusPointServiceImpl implements BusPointService {
 					);
 				});
 		busPointDataMapper.fromBasicBusPointRequestDto(dto, exist);
-
-		return busPointDataMapper.toGetBusPointResponseDto(
-				exist
-		);
 	}
 
 	@Override

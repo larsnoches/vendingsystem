@@ -28,12 +28,10 @@ public class BusServiceImpl implements BusService {
 	private final BusDataMapper busDataMapper;
 
 	@Override
-	public GetBusResponseDto createBus(BasicBusRequestDto dto) {
+	public void createBus(BasicBusRequestDto dto) {
 		log.info("Create bus {}", dto.getMakeModel());
 		Bus bus = busDataMapper.fromBasicBusRequestDto(dto);
-		return busDataMapper.toGetBusResponseDto(
-				busRepo.save(bus)
-		);
+		busRepo.save(bus);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class BusServiceImpl implements BusService {
 	}
 
 	@Override
-	public GetBusResponseDto updateBus(Long id, BasicBusRequestDto dto) {
+	public void updateBus(Long id, BasicBusRequestDto dto) {
 		log.info("Saving exist bus {} to the database", dto.getMakeModel());
 		Bus exist = busRepo.findById(id)
 				.orElseThrow(() -> {
@@ -71,9 +69,6 @@ public class BusServiceImpl implements BusService {
 				});
 
 		busDataMapper.fromBasicBusRequestDto(dto, exist);
-		return busDataMapper.toGetBusResponseDto(
-				exist
-		);
 	}
 
 	@Override

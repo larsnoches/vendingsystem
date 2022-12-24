@@ -30,7 +30,7 @@ public class FareController {
 	private final FareService fareService;
 
 	@PostMapping("/fares/create")
-	public ResponseEntity<GetFareResponseDto> createFare(
+	public ResponseEntity<?> createFare(
 			@RequestBody @Valid BasicFareRequestDto dto
 	) {
 		try {
@@ -39,9 +39,10 @@ public class FareController {
 							.path("/api/v1/fares/create")
 							.toUriString()
 			);
+			fareService.createFare(dto);
 			return ResponseEntity
 					.created(uri)
-					.body(fareService.createFare(dto));
+					.build();
 		} catch (RuntimeException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
@@ -75,14 +76,14 @@ public class FareController {
 	}
 
 	@PutMapping("/fares/{id}")
-	public GetFareResponseDto updateFare(
+	public void updateFare(
 			@NotNull
 			@Min(value = 0L, message = WRONG_FARE_ID_ERR_MESSAGE)
 			@PathVariable Long id,
 			@RequestBody @Valid BasicFareRequestDto dto
 	) {
 		try {
-			return fareService.updateFare(id, dto);
+			fareService.updateFare(id, dto);
 		} catch (RuntimeException ex) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}

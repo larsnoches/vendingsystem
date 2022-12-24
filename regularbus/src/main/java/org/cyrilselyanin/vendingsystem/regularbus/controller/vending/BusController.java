@@ -32,7 +32,7 @@ public class BusController {
 	private final BusService busService;
 
 	@PostMapping("/buses/create")
-	public ResponseEntity<GetBusResponseDto> createBus(
+	public ResponseEntity<?> createBus(
 			@RequestBody @Valid BasicBusRequestDto dto
 	) {
 		try {
@@ -41,9 +41,11 @@ public class BusController {
 							.path("/api/v1/buses/create")
 							.toUriString()
 			);
+			busService.createBus(dto);
 			return ResponseEntity
 					.created(uri)
-					.body(busService.createBus(dto));
+					.build();
+//					.body(busService.createBus(dto));
 		} catch (RuntimeException ex) {
 			log.error("There is a create bus error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
@@ -80,14 +82,14 @@ public class BusController {
 	}
 
 	@PutMapping("/buses/{id}")
-	public GetBusResponseDto updateBus(
+	public void updateBus(
 			@NotNull
 			@Min(value = 0L, message = WRONG_BUS_ID_ERR_MESSAGE)
 			@PathVariable Long id,
 			@RequestBody @Valid BasicBusRequestDto dto
 	) {
 		try {
-			return busService.updateBus(id, dto);
+			busService.updateBus(id, dto);
 		} catch (RuntimeException ex) {
 			log.error("There is an update bus error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
