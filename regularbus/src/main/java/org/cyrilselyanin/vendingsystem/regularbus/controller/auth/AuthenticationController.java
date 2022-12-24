@@ -58,6 +58,7 @@ public class AuthenticationController {
 					.build();
 //			return jwtUtils.generateToken(user);
 		}
+		log.error("There is an authenticate error.");
 		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ERROR_WHEN_AUTHENTICATE_MESSAGE);
 	}
 
@@ -85,7 +86,7 @@ public class AuthenticationController {
 //					.refreshToken(jwtUtils.generateToken(user, 24))
 					.build();
 		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException ex) {
-			log.error("Error with refresh token");
+			log.error("Error with refresh token.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
@@ -104,6 +105,7 @@ public class AuthenticationController {
 					userService.registerUser(requestDto)
 			);
 		} catch (RuntimeException ex) {
+			log.error("There is a register user error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}

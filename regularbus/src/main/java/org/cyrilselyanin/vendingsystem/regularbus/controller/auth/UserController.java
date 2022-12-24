@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.controller.auth;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.ChangePasswordRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.CreateUserRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.UpdateUserRequestDto;
@@ -8,9 +9,11 @@ import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.service.auth.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -21,6 +24,7 @@ import java.net.URI;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @Validated
+@Slf4j
 public class UserController {
 
 	private static final String WRONG_USER_ID_ERR_MESSAGE = "Недопустимый id пользователя.";
@@ -43,7 +47,12 @@ public class UserController {
 
 	@GetMapping("/users")
 	public Page<GetUserResponseDto> getUsers(Pageable pageable) {
-		return userService.getUsers(pageable);
+		try {
+			return userService.getUsers(pageable);
+		} catch (RuntimeException ex) {
+			log.error("There is a get users error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@GetMapping("/users/{id}")
@@ -52,7 +61,12 @@ public class UserController {
 			@Min(value = 0L, message = WRONG_USER_ID_ERR_MESSAGE)
 			@PathVariable Long id
 	) {
-		return userService.getUser(id);
+		try {
+			return userService.getUser(id);
+		} catch (RuntimeException ex) {
+			log.error("There is a get user by id error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@GetMapping("/users/get/{email}")
@@ -65,21 +79,32 @@ public class UserController {
 			@Email(message = WRONG_EMAIL_ERR_MESSAGE)
 			@PathVariable String email
 	) {
-		return userService.getUser(email);
+		try {
+			return userService.getUser(email);
+		} catch (RuntimeException ex) {
+			log.error("There is a get user by email error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@PostMapping("/users/create")
 	public ResponseEntity<GetUserResponseDto> createUser(
 			@RequestBody @Valid CreateUserRequestDto createUserRequestDto
 	) {
-		URI uri = URI.create(
-				ServletUriComponentsBuilder.fromCurrentContextPath()
-						.path("/api/v1/users/create")
-						.toUriString()
-		);
-		return ResponseEntity
-				.created(uri)
-				.body(userService.createUser(createUserRequestDto));
+		try {
+			URI uri = URI.create(
+					ServletUriComponentsBuilder.fromCurrentContextPath()
+							.path("/api/v1/users/create")
+							.toUriString()
+			);
+			return ResponseEntity
+					.created(uri)
+					.body(userService.createUser(createUserRequestDto));
+
+		} catch (RuntimeException ex) {
+			log.error("There is a create user error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@PutMapping("/users/{id}/update")
@@ -89,7 +114,12 @@ public class UserController {
 			@PathVariable Long id,
 			@RequestBody @Valid UpdateUserRequestDto updateUserRequestDto
 	) {
-		return userService.updateUserById(id, updateUserRequestDto);
+		try {
+			return userService.updateUserById(id, updateUserRequestDto);
+		} catch (RuntimeException ex) {
+			log.error("There is an update user by id error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@PutMapping("/users/{id}/changepassword")
@@ -99,7 +129,12 @@ public class UserController {
 			@PathVariable Long id,
 			@RequestBody @Valid ChangePasswordRequestDto changePasswordRequestDto
 	) {
-		userService.changePassword(id, changePasswordRequestDto);
+		try {
+			userService.changePassword(id, changePasswordRequestDto);
+		} catch (RuntimeException ex) {
+			log.error("There is a change user password error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@DeleteMapping("/users/{id}/remove")
@@ -108,7 +143,12 @@ public class UserController {
 			@Min(value = 0L, message = WRONG_USER_ID_ERR_MESSAGE)
 			@PathVariable Long id
 	) {
-		userService.removeUser(id);
+		try {
+			userService.removeUser(id);
+		} catch (RuntimeException ex) {
+			log.error("There is a remove user error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 }

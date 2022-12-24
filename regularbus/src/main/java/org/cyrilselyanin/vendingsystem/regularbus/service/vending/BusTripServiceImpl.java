@@ -28,12 +28,10 @@ public class BusTripServiceImpl implements BusTripService {
 	private final BusTripDataMapper busTripDataMapper;
 
 	@Override
-	public GetBusTripResponseDto createBusTrip(BasicBusTripRequestDto dto) {
+	public void createBusTrip(BasicBusTripRequestDto dto) {
 		log.info("Create busTrip {}", dto.getBusRouteNumber());
 		BusTrip busTrip = busTripDataMapper.fromBasicBusTripRequestDto(dto);
-		return busTripDataMapper.toGetBusTripResponseDto(
-				busTripRepo.save(busTrip)
-		);
+		busTripRepo.save(busTrip);
 	}
 
 	@Override
@@ -60,7 +58,7 @@ public class BusTripServiceImpl implements BusTripService {
 	}
 
 	@Override
-	public GetBusTripResponseDto updateBusTrip(Long id, BasicBusTripRequestDto dto) {
+	public void updateBusTrip(Long id, BasicBusTripRequestDto dto) {
 		log.info("Saving exist busTrip {} to the database", dto.getBusRouteNumber());
 		BusTrip exist = busTripRepo.findById(id)
 				.orElseThrow(() -> {
@@ -71,9 +69,6 @@ public class BusTripServiceImpl implements BusTripService {
 				});
 
 		busTripDataMapper.fromBasicBusTripRequestDto(dto, exist);
-		return busTripDataMapper.toGetBusTripResponseDto(
-				exist
-		);
 	}
 
 	@Override

@@ -13,11 +13,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-//@JsonPropertyOrder({
-//		"id", "departureBusPoint", "arrivalBusPoint", "distance",
-//		"busRouteNumber", "departureDateTime", "averageBusSpeed",
-//		"bus", "fare"
-//})
 public class GetBusTripResponseDto {
 
 	private Long id;

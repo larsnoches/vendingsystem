@@ -6,9 +6,11 @@ import org.cyrilselyanin.vendingsystem.regularbus.dto.fare.GetFareResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.service.vending.FareService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -31,14 +33,18 @@ public class FareController {
 	public ResponseEntity<GetFareResponseDto> createFare(
 			@RequestBody @Valid BasicFareRequestDto dto
 	) {
-		URI uri = URI.create(
-				ServletUriComponentsBuilder.fromCurrentContextPath()
-						.path("/api/v1/fares/create")
-						.toUriString()
-		);
-		return ResponseEntity
-				.created(uri)
-				.body(fareService.createFare(dto));
+		try {
+			URI uri = URI.create(
+					ServletUriComponentsBuilder.fromCurrentContextPath()
+							.path("/api/v1/fares/create")
+							.toUriString()
+			);
+			return ResponseEntity
+					.created(uri)
+					.body(fareService.createFare(dto));
+		} catch (RuntimeException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@GetMapping("/fares/{id}")
@@ -47,7 +53,11 @@ public class FareController {
 			@Min(value = 0L, message = WRONG_FARE_ID_ERR_MESSAGE)
 			@PathVariable Long id
 	) {
-		return fareService.getFare(id);
+		try {
+			return fareService.getFare(id);
+		} catch (RuntimeException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@GetMapping("/fares/carrier/{carrierId}")
@@ -57,7 +67,11 @@ public class FareController {
 			@PathVariable Long carrierId,
 			Pageable pageable
 	) {
-		return fareService.getFareesByCarrierId(carrierId, pageable);
+		try {
+			return fareService.getFareesByCarrierId(carrierId, pageable);
+		} catch (RuntimeException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@PutMapping("/fares/{id}")
@@ -67,7 +81,11 @@ public class FareController {
 			@PathVariable Long id,
 			@RequestBody @Valid BasicFareRequestDto dto
 	) {
-		return fareService.updateFare(id, dto);
+		try {
+			return fareService.updateFare(id, dto);
+		} catch (RuntimeException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 	@DeleteMapping("/fares/{id}")
@@ -76,7 +94,11 @@ public class FareController {
 			@Min(value = 0L, message = WRONG_FARE_ID_ERR_MESSAGE)
 			@PathVariable Long id
 	) {
-		fareService.removeFare(id);
+		try {
+			fareService.removeFare(id);
+		} catch (RuntimeException ex) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
 	}
 
 }

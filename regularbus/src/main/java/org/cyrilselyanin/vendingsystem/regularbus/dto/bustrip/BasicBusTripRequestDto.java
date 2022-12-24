@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,6 +58,7 @@ public class BasicBusTripRequestDto {
 	@NotNull(message = "Перевозчик не указан")
 	private Long carrier;
 
+	@JsonIgnore
 	public String getDepartureDatetime() {
 		return String.format("%s %s", departureDate, departureTime);
 	}
