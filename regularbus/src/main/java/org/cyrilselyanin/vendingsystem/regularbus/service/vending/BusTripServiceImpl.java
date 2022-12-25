@@ -13,6 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -82,5 +85,29 @@ public class BusTripServiceImpl implements BusTripService {
 					);
 				});
 		busTripRepo.deleteById(id);
+	}
+
+	@Override
+	public Page<GetBusTripResponseDto> getBusTripsByArrivalAndDateTime(
+			String busPointName, String departureDateString, Pageable pageable
+	) {
+		log.info("Fetching busTrips by {} and {}", busPointName, departureDateString);
+		Timestamp departureDateTime = createDateTimeFromDateString(departureDateString);
+		Page<BusTrip> busTripPage = busTripRepo
+				.findAllByArrivalBusPointNameContainsIgnoreCaseAndDepartureDateTimeGreaterThanEqual(
+						busPointName, departureDateTime, pageable
+				);
+		List<GetBusTripResponseDto> list = busTripPage.stream()
+				.map(busTripDataMapper::toGetBusTripResponseDto)
+				.toList();
+		return new PageImpl<>(list, pageable, busTripPage.getTotalElements());
+	}
+
+	private Timestamp createDateTimeFromDateString(String dateString) {
+		String dateTimePattern = "dd.MM.yyyy HH:mm";
+		String dateTimeString = String.format("%s %s", dateString, "00:00");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateTimePattern);
+		LocalDateTime localDateTime = LocalDateTime.from(formatter.parse(dateTimeString));
+		return Timestamp.valueOf(localDateTime);
 	}
 }

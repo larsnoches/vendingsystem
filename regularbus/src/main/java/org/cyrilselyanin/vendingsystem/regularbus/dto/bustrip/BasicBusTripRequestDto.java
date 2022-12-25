@@ -35,10 +35,10 @@ public class BasicBusTripRequestDto {
 			message = "Номер маршрута должен быть от 2 до 15 символов")
 	private String busRouteNumber;
 
-	@NotNull(message = "Дата отправления не указана")
+	@NotBlank(message = "Дата отправления не указана")
 	private String departureDate;
 
-	@NotNull(message = "Время отправления не указано")
+	@NotBlank(message = "Время отправления не указано")
 	private String departureTime;
 
 	@NotNull(message = "Средняя скорость на маршруте не указана")

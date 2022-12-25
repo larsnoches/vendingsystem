@@ -23,4 +23,8 @@ public interface BusTripService {
 	@PreAuthorize("hasRole('MANAGER')")
 	void removeBusTrip(Long id);
 
+	Page<GetBusTripResponseDto> getBusTripsByArrivalAndDateTime(
+			String busPointName, String departureDateString, Pageable pageable
+	);
+
 }

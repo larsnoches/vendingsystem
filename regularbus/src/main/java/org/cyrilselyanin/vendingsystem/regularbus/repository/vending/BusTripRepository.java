@@ -5,8 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.sql.Timestamp;
+
 public interface BusTripRepository extends JpaRepository<BusTrip, Long> {
 
 	Page<BusTrip> findAllByCarrierId(Long id, Pageable pageable);
+	Page<BusTrip> findAllByArrivalBusPointNameContainsIgnoreCaseAndDepartureDateTimeGreaterThanEqual(
+		String busPointName, Timestamp departureDateTime, Pageable pageable
+	);
 
 }

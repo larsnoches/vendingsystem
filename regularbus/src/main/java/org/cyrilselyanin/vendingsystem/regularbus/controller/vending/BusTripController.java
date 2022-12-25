@@ -16,6 +16,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 
@@ -106,6 +107,27 @@ public class BusTripController {
 			busTripService.removeBusTrip(id);
 		} catch (RuntimeException ex) {
 			log.error("There is a remove bus error.", ex.getCause());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+		}
+	}
+
+	@GetMapping("/busTrips/search")
+	public Page<GetBusTripResponseDto> searchBusTrips(
+			@NotBlank(message = "Название пункта отправления не указано")
+			@RequestParam("arrivalPointTo")
+			String arrivalBusPointName,
+			@NotBlank(message = "Дата отправления не указана")
+			@RequestParam("departureDate")
+			String departureDateString,
+			Pageable pageable
+	) {
+		try {
+			return busTripService
+					.getBusTripsByArrivalAndDateTime(
+							arrivalBusPointName, departureDateString, pageable
+					);
+		} catch (RuntimeException ex) {
+			log.error("There is a get bustrips by arrival and dateTime error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}
