@@ -11,6 +11,7 @@ import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -84,8 +85,8 @@ public class BusTrip {
     private Carrier carrier;
 
     @OneToMany(mappedBy = "busTrip")
-    private Set<Seat> seats;
+    private Set<Seat> seats = new HashSet<>();
 
     @OneToMany(mappedBy = "busTrip")
-    private Set<Ticket> tickets;
+    private Set<Ticket> tickets = new HashSet<>();
 }

@@ -39,7 +39,7 @@ public class SecurityConfig {
 				.cors()
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v*/auth/**", "/api/v*/users/register")
+				.antMatchers("/api/v*/auth/**", "/api/v*/users/register", "/api/v*/busTrips/search")
 				.permitAll()
 //				.antMatchers("/api/v*/what").hasRole("MANAGER")
 				.anyRequest()
