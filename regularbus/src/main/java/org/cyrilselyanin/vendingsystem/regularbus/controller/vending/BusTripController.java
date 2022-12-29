@@ -2,9 +2,11 @@ package org.cyrilselyanin.vendingsystem.regularbus.controller.vending;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.BasicBusTripRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.service.vending.BusTripService;
+import org.cyrilselyanin.vendingsystem.regularbus.service.vending.SeatService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,7 @@ public class BusTripController {
 	private static final String WRONG_CARRIER_ID_ERR_MESSAGE = "Недопустимый id поставщика.";
 
 	private final BusTripService busTripService;
+	private final SeatService seatService;
 
 	@PostMapping("/busTrips/create")
 	public ResponseEntity<?> createBusTrip(
@@ -42,11 +45,13 @@ public class BusTripController {
 							.path("/api/v1/busTrips/create")
 							.toUriString()
 			);
-			busTripService.createBusTrip(dto);
+			BusTrip busTrip = busTripService.createBusTrip(dto);
+			Integer seatCount = busTrip.getBus().getSeatCount();
+			Long busTripId = busTrip.getId();
+			seatService.createSeats(seatCount, busTripId);
 			return ResponseEntity
 					.created(uri)
 					.build();
-//					.body(busTripService.createBusTrip(dto));
 		} catch (RuntimeException ex) {
 			log.error("There is a create bus error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
@@ -127,7 +132,7 @@ public class BusTripController {
 							arrivalBusPointName, departureDateString, pageable
 					);
 		} catch (RuntimeException ex) {
-			log.error("There is a get bustrips by arrival and dateTime error.", ex.getCause());
+			log.error("There is a get bustrips by arrival point and date error.", ex.getCause());
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
 		}
 	}

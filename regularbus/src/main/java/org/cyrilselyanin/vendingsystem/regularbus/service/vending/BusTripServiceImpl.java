@@ -31,10 +31,10 @@ public class BusTripServiceImpl implements BusTripService {
 	private final BusTripDataMapper busTripDataMapper;
 
 	@Override
-	public void createBusTrip(BasicBusTripRequestDto dto) {
+	public BusTrip createBusTrip(BasicBusTripRequestDto dto) {
 		log.info("Create busTrip {}", dto.getBusRouteNumber());
 		BusTrip busTrip = busTripDataMapper.fromBasicBusTripRequestDto(dto);
-		busTripRepo.save(busTrip);
+		return busTripRepo.save(busTrip);
 	}
 
 	@Override

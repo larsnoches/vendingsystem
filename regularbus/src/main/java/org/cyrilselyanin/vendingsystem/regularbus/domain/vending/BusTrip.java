@@ -1,11 +1,8 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.Seat;
+import lombok.*;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
+import org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate.ValidateBeforeDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -20,6 +17,8 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
+@ValidateBeforeDate
 public class BusTrip {
     @Id
     @GeneratedValue(
@@ -63,11 +62,16 @@ public class BusTrip {
     @Column(name = "departure_datetime", nullable = false)
     private Timestamp departureDateTime;
 
-    @NotNull(message = "Средняя скорость на маршруте не указана")
-    @Min(value = 5, message = "Средняя скорость на рейсе должна быть более 5")
-    @Max(value = 130, message = "Средняя скорость на рейсе должна быть меньше 130")
-    @Column(name = "average_bus_speed", nullable = false)
-    private Integer averageBusSpeed;
+//    @NotNull(message = "Средняя скорость на маршруте не указана")
+//    @Min(value = 5, message = "Средняя скорость на рейсе должна быть более 5")
+//    @Max(value = 130, message = "Средняя скорость на рейсе должна быть меньше 130")
+//    @Column(name = "average_bus_speed", nullable = false)
+//    private Integer averageBusSpeed;
+
+    @NotNull(message = "Дата и время прибытия не указаны")
+    @Future
+    @Column(name = "arrival_datetime", nullable = false)
+    private Timestamp arrivalDateTime;
 
     @NotNull(message = "Автобус не указан")
     @ManyToOne

@@ -5,10 +5,10 @@ import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class TicketBeforeDateValidator implements ConstraintValidator<TicketValidateBeforeDate, Ticket> {
+public class TicketBeforeDateValidator implements ConstraintValidator<ValidateBeforeDate, Ticket> {
 
     @Override
-    public void initialize(TicketValidateBeforeDate constraintAnnotation) {
+    public void initialize(ValidateBeforeDate constraintAnnotation) {
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
-import org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate.TicketValidateBeforeDate;
+import org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate.ValidateBeforeDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Getter
 @Setter
-@TicketValidateBeforeDate
+@ValidateBeforeDate
 public class Ticket {
     @Id
     @GeneratedValue(
@@ -114,7 +114,7 @@ public class Ticket {
     private Timestamp departureDateTime;
 
     @Future
-    @Column(name = "arrival_datetime")
+    @Column(name = "arrival_datetime", nullable = false)
     private Timestamp arrivalDatetime;
 
     @NotNull(message = "Price isn't set")

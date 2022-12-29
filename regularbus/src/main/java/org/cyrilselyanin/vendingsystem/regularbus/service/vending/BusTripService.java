@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.BasicBusTripRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
 import org.springframework.data.domain.Page;
@@ -9,7 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface BusTripService {
 
 	@PreAuthorize("hasRole('MANAGER')")
-	void createBusTrip(BasicBusTripRequestDto dto);
+	BusTrip createBusTrip(BasicBusTripRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	GetBusTripResponseDto getBusTrip(Long id);

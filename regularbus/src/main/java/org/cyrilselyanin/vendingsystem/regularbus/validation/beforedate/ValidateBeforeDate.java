@@ -13,9 +13,9 @@ import javax.validation.Payload;
 @Target( { ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 //@Constraint(validatedBy = { })
-@Constraint(validatedBy = { TicketBeforeDateValidator.class })
+@Constraint(validatedBy = { TicketBeforeDateValidator.class, BusTripBeforeDateValidator.class })
 @Documented
-public @interface TicketValidateBeforeDate {
+public @interface ValidateBeforeDate {
     String message() default "The Start date should be before the ending date.";
 
     Class<?>[] groups() default { };

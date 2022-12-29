@@ -77,6 +77,12 @@ public class BusTripDataMapper {
 				.addMappings(mapper -> mapper.using(timestampToTimeStringConverter).map(
 						BusTrip::getDepartureDateTime, GetBusTripResponseDto::setDepartureTime
 				))
+				.addMappings(mapper -> mapper.using(timestampToDateStringConverter).map(
+						BusTrip::getArrivalDateTime, GetBusTripResponseDto::setArrivalDate
+				))
+				.addMappings(mapper -> mapper.using(timestampToTimeStringConverter).map(
+						BusTrip::getArrivalDateTime, GetBusTripResponseDto::setArrivalTime
+				))
 				.addMappings(mapper -> mapper.using(busPointToDtoConverter).map(
 						BusTrip::getDepartureBusPoint, GetBusTripResponseDto::setDepartureBusPoint
 				))
@@ -96,6 +102,9 @@ public class BusTripDataMapper {
 		modelMapper.createTypeMap(BasicBusTripRequestDto.class, BusTrip.class)
 				.addMappings(mapper -> mapper.using(datetimeStringToTimestampConverter).map(
 						BasicBusTripRequestDto::getDepartureDatetime, BusTrip::setDepartureDateTime
+				))
+				.addMappings(mapper -> mapper.using(datetimeStringToTimestampConverter).map(
+						BasicBusTripRequestDto::getArrivalDatetime, BusTrip::setArrivalDateTime
 				))
 				.addMappings(mapper -> mapper.using(carrierIdToCarrierConverter).map(
 						BasicBusTripRequestDto::getCarrier, BusTrip::setCarrier

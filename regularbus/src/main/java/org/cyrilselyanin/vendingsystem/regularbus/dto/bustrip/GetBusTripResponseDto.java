@@ -22,7 +22,9 @@ public class GetBusTripResponseDto {
 	private String busRouteNumber;
 	private String departureDate;
 	private String departureTime;
-	private Integer averageBusSpeed;
+	private String arrivalDate;
+	private String arrivalTime;
+//	private Integer averageBusSpeed;
 	private GetBusResponseDto bus;
 	private GetFareResponseDto fare;
 	private GetCarrierResponseDto carrier;

@@ -41,10 +41,16 @@ public class BasicBusTripRequestDto {
 	@NotBlank(message = "Время отправления не указано")
 	private String departureTime;
 
-	@NotNull(message = "Средняя скорость на маршруте не указана")
-	@Min(value = 5, message = "Средняя скорость на рейсе должна быть более 5")
-	@Max(value = 130, message = "Средняя скорость на рейсе должна быть меньше 130")
-	private Integer averageBusSpeed;
+	@NotBlank(message = "Дата прибытия не указана")
+	private String arrivalDate;
+
+	@NotBlank(message = "Время прибытия не указано")
+	private String arrivalTime;
+
+//	@NotNull(message = "Средняя скорость на маршруте не указана")
+//	@Min(value = 5, message = "Средняя скорость на рейсе должна быть более 5")
+//	@Max(value = 130, message = "Средняя скорость на рейсе должна быть меньше 130")
+//	private Integer averageBusSpeed;
 
 	// bus id only
 	@NotNull(message = "Автобус не указан")
@@ -61,5 +67,10 @@ public class BasicBusTripRequestDto {
 	@JsonIgnore
 	public String getDepartureDatetime() {
 		return String.format("%s %s", departureDate, departureTime);
+	}
+
+	@JsonIgnore
+	public String getArrivalDatetime() {
+		return String.format("%s %s", arrivalDate, arrivalTime);
 	}
 }

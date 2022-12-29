@@ -1,10 +1,6 @@
-package org.cyrilselyanin.vendingsystem.regularbus.domain;
+package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -17,6 +13,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Seat {
     @Id
     @GeneratedValue(
@@ -29,22 +26,22 @@ public class Seat {
     @Column(name = "seat_id", nullable = false)
     private Long id;
 
-    @NotBlank(message = "Seat name cannot be empty")
+    @NotBlank(message = "Название места не заполнено")
     @Size(
             min = 2,
             max = 10,
-            message = "Seat name must be between 2 and 10 characters")
+            message = "Название места должно быть от 2 до 10 символов")
     @Column(name = "seat_name", length = 10, nullable = false)
     private String name;
 
-//    @NotNull(message = "Seat state isn't set")
+    @NotNull(message = "Состояние места не заполнено")
 //    @ManyToOne
 //    @JoinColumn(name = "seat_state_id", nullable = false)
 //    private SeatState seatState;
     @Column(name = "seat_is_occupied", nullable = false)
-    private Boolean seatIsOccupied;
+    private Boolean seatIsOccupied = false;
 
-    @NotNull(message = "Bus trip isn't set")
+    @NotNull(message = "Маршрут не указан")
     @ManyToOne
     @JoinColumn(name = "bustrip_id", nullable = false)
     private BusTrip busTrip;
