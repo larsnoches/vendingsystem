@@ -54,8 +54,7 @@ public class SeatController {
 		}
 	}
 
-//	@GetMapping("/busTrips/search/{busTripId}/seats")
-	@GetMapping("/seats/busTrip/{busTripId}")
+	@GetMapping("/seats/busTrip/{busTripId}/list")
 	public List<GetSeatResponseDto> getSeats(
 			@NotNull
 			@Min(value = 0L, message = WRONG_BUSTRIP_ID_ERR_MESSAGE)
@@ -81,8 +80,7 @@ public class SeatController {
 		}
 	}
 
-//	@GetMapping("/busTrips/{busTripId}/seats")
-	@GetMapping("/seats/busTrip/{busTripId}/list")
+	@GetMapping("/seats/busTrip/{busTripId}")
 	public Page<GetSeatResponseDto> getSeatsByBusTripId(
 			@NotNull
 			@Min(value = 0L, message = WRONG_BUSTRIP_ID_ERR_MESSAGE)

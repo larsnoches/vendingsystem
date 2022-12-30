@@ -27,8 +27,8 @@ import java.util.stream.IntStream;
 public class SeatServiceImpl implements SeatService {
 	private static final String SEAT_NOT_FOUND_MESSAGE = "Место %d не найдено в базе данных.";
 	private static final String SEAT_NOT_FOUND_LOG_MESSAGE = "Seat {} not found in the database.";
-	private static final String BUSTRIP_NOT_FOUND_MESSAGE = "Маршрут %d не найден в базе данных.";
-	private static final String BUSTRIP_NOT_FOUND_LOG_MESSAGE = "BusTrip {} not found in the database.";
+//	private static final String BUSTRIP_NOT_FOUND_MESSAGE = "Маршрут %d не найден в базе данных.";
+//	private static final String BUSTRIP_NOT_FOUND_LOG_MESSAGE = "BusTrip {} not found in the database.";
 
 	private final SeatRepository seatRepo;
 	private final SeatDataMapper seatDataMapper;
@@ -41,7 +41,7 @@ public class SeatServiceImpl implements SeatService {
 	}
 
 	@Override
-	public void createSeats(Integer count, Long busTripId) {
+	public List<Seat> createSeats(Integer count, Long busTripId) {
 		log.info("Create {} seats for busTrip {}", count, busTripId);
 		List<Seat> seatList = IntStream.rangeClosed(1, count)
 				.boxed()
@@ -54,7 +54,7 @@ public class SeatServiceImpl implements SeatService {
 						)
 						.build())
 				.toList();
-		seatRepo.saveAll(seatList);
+		return seatRepo.saveAll(seatList);
 	}
 
 	@Override
@@ -125,6 +125,26 @@ public class SeatServiceImpl implements SeatService {
 	}
 
 	@Override
+	public void updateSeatsWhenBusUpdated(Long busTripId, Integer count, Long busId) {
+		log.info(
+				"Updating seats cause bus updated for busTrip {} with count {} and bus {}",
+				busTripId, count, busId
+		);
+		List<Seat> seats = seatRepo.findAllByBusTripId(busTripId);
+		seatRepo.deleteAll(seats);
+
+		List<Seat> createdSeats = createSeats(count, busTripId);
+		createdSeats.forEach(seat -> {
+			seat.setSeatIsOccupied(
+					seats.stream().anyMatch(oldSeat ->
+							oldSeat.getName().equals(seat.getName()) &&
+									oldSeat.getSeatIsOccupied()
+					)
+			);
+		});
+	}
+
+	@Override
 	public void removeSeat(Long id) {
 		log.info("Removing seat {}", id);
 		seatRepo.findById(id)
@@ -135,5 +155,12 @@ public class SeatServiceImpl implements SeatService {
 					);
 				});
 		seatRepo.deleteById(id);
+	}
+
+	@Override
+	public void removeSeats(Long busTripId) {
+		log.info("Removing seats for busTrip {}", busTripId);
+		List<Seat> seats = seatRepo.findAllByBusTripId(busTripId);
+		seatRepo.deleteAll(seats);
 	}
 }

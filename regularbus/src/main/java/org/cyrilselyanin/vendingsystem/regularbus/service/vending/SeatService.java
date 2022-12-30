@@ -1,5 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Seat;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.seat.BasicSeatRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.seat.GetSeatResponseDto;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ public interface SeatService {
 	void createSeat(BasicSeatRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	void createSeats(Integer count, Long busTripId);
+	List<Seat> createSeats(Integer count, Long busTripId);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	GetSeatResponseDto getSeat(Long id);
@@ -28,6 +29,12 @@ public interface SeatService {
 	void updateSeat(Long id, BasicSeatRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
+	void updateSeatsWhenBusUpdated(Long busTripId, Integer count, Long busId);
+
+	@PreAuthorize("hasRole('MANAGER')")
 	void removeSeat(Long id);
+
+	@PreAuthorize("hasRole('MANAGER')")
+	void removeSeats(Long busTripId);
 
 }

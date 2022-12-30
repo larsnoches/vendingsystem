@@ -3,6 +3,7 @@ package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.bus.GetBusResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.BasicBusTripRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.BusTripDataMapper;
@@ -29,12 +30,18 @@ public class BusTripServiceImpl implements BusTripService {
 
 	private final BusTripRepository busTripRepo;
 	private final BusTripDataMapper busTripDataMapper;
+	private final SeatService seatService;
+	private final BusService busService;
 
 	@Override
-	public BusTrip createBusTrip(BasicBusTripRequestDto dto) {
+	public void createBusTrip(BasicBusTripRequestDto dto) {
 		log.info("Create busTrip {}", dto.getBusRouteNumber());
 		BusTrip busTrip = busTripDataMapper.fromBasicBusTripRequestDto(dto);
-		return busTripRepo.save(busTrip);
+		busTripRepo.save(busTrip);
+
+		Integer seatCount = busTrip.getBus().getSeatCount();
+		Long busTripId = busTrip.getId();
+		seatService.createSeats(seatCount, busTripId);
 	}
 
 	@Override
@@ -70,8 +77,15 @@ public class BusTripServiceImpl implements BusTripService {
 							String.format(BUSTRIP_NOT_FOUND_MESSAGE, id)
 					);
 				});
-
+		boolean shouldUpdateSeats = !dto.getBus().equals(exist.getBus().getId());
 		busTripDataMapper.fromBasicBusTripRequestDto(dto, exist);
+
+		if (!shouldUpdateSeats) {
+			GetBusResponseDto bus = busService.getBus(dto.getBus());
+			Integer seatCount = bus.getSeatCount();
+			Long busId = bus.getId();
+			seatService.updateSeatsWhenBusUpdated(id, seatCount, busId);
+		}
 	}
 
 	@Override
@@ -85,6 +99,7 @@ public class BusTripServiceImpl implements BusTripService {
 					);
 				});
 		busTripRepo.deleteById(id);
+		seatService.removeSeats(id);
 	}
 
 	@Override
