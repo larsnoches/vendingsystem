@@ -124,10 +124,10 @@ public class SeatServiceImpl implements SeatService {
 	}
 
 	@Override
-	public void updateSeatsWhenBusUpdated(Long busTripId, Integer count, Long busId) {
+	public void updateSeatsWhenBusUpdated(Long busTripId, Integer count) {
 		log.info(
-				"Updating seats cause bus updated for busTrip {} with count {} and bus {}",
-				busTripId, count, busId
+				"Updating seats cause bus updated for busTrip {} with count {}",
+				busTripId, count
 		);
 		List<Seat> seats = seatRepo.findAllByBusTripId(busTripId);
 		seatRepo.deleteAll(seats);

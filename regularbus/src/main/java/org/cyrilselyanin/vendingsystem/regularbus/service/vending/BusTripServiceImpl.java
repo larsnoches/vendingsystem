@@ -83,11 +83,10 @@ public class BusTripServiceImpl implements BusTripService {
 		boolean shouldUpdateSeats = !dto.getBus().equals(exist.getBus().getId());
 		busTripDataMapper.fromBasicBusTripRequestDto(dto, exist);
 
-		if (!shouldUpdateSeats) {
+		if (shouldUpdateSeats) {
 			GetBusResponseDto bus = busService.getBus(dto.getBus());
 			Integer seatCount = bus.getSeatCount();
-			Long busId = bus.getId();
-			seatService.updateSeatsWhenBusUpdated(id, seatCount, busId);
+			seatService.updateSeatsWhenBusUpdated(id, seatCount);
 		}
 	}
 

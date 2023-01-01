@@ -29,7 +29,7 @@ public interface SeatService {
 	void updateSeat(Long id, BasicSeatRequestDto dto);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	void updateSeatsWhenBusUpdated(Long busTripId, Integer count, Long busId);
+	void updateSeatsWhenBusUpdated(Long busTripId, Integer count);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	void removeSeat(Long id);
