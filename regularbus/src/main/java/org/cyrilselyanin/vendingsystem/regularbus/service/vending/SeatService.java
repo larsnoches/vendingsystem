@@ -35,6 +35,6 @@ public interface SeatService {
 	void removeSeat(Long id);
 
 	@PreAuthorize("hasRole('MANAGER')")
-	void removeSeats(Long busTripId);
+	void removeSeats(List<Long> seatsIds);
 
 }

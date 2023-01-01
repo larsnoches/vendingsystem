@@ -3,6 +3,7 @@ package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Seat;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bus.GetBusResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.BasicBusTripRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
@@ -93,15 +94,18 @@ public class BusTripServiceImpl implements BusTripService {
 	@Override
 	public void removeBusTrip(Long id) {
 		log.info("Removing busTrip {}", id);
-		busTripRepo.findById(id)
+		BusTrip busTrip = busTripRepo.findById(id)
 				.orElseThrow(() -> {
 					log.error(BUSTRIP_NOT_FOUND_LOG_MESSAGE, id);
 					throw new IllegalStateException(
 							String.format(BUSTRIP_NOT_FOUND_MESSAGE, id)
 					);
 				});
+		List<Long> seatsIds = busTrip.getSeats().stream()
+				.map(Seat::getId)
+				.toList();
 		busTripRepo.deleteById(id);
-		seatService.removeSeats(id);
+		seatService.removeSeats(seatsIds);
 	}
 
 	@Override

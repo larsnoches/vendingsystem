@@ -27,8 +27,6 @@ import java.util.stream.IntStream;
 public class SeatServiceImpl implements SeatService {
 	private static final String SEAT_NOT_FOUND_MESSAGE = "Место %d не найдено в базе данных.";
 	private static final String SEAT_NOT_FOUND_LOG_MESSAGE = "Seat {} not found in the database.";
-//	private static final String BUSTRIP_NOT_FOUND_MESSAGE = "Маршрут %d не найден в базе данных.";
-//	private static final String BUSTRIP_NOT_FOUND_LOG_MESSAGE = "BusTrip {} not found in the database.";
 
 	private final SeatRepository seatRepo;
 	private final SeatDataMapper seatDataMapper;
@@ -53,15 +51,6 @@ public class SeatServiceImpl implements SeatService {
 							.build()
 					);
 					return seat;
-//							Seat.builder()
-//									.name(i.toString())
-//									.busTrip(
-//											BusTrip.builder()
-//													.id(busTripId)
-//													.build()
-//									)
-//									.build()
-//
 				})
 				.toList();
 		return seatRepo.saveAll(seatList);
@@ -168,9 +157,8 @@ public class SeatServiceImpl implements SeatService {
 	}
 
 	@Override
-	public void removeSeats(Long busTripId) {
-		log.info("Removing seats for busTrip {}", busTripId);
-		List<Seat> seats = seatRepo.findAllByBusTripId(busTripId);
-		seatRepo.deleteAll(seats);
+	public void removeSeats(List<Long> seatsIds) {
+		log.info("Removing seats with ids {}", seatsIds);
+		seatRepo.deleteAllById(seatsIds);
 	}
 }
