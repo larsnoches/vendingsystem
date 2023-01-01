@@ -15,9 +15,9 @@ public class BasicSeatRequestDto {
 
 	@NotBlank(message = "Название места не заполнено")
 	@Size(
-			min = 2,
+			min = 1,
 			max = 10,
-			message = "Название места должно быть от 2 до 10 символов")
+			message = "Название места должно быть от 1 до 10 символов")
 	private String name;
 
 	@NotNull(message = "Состояние места не заполнено")

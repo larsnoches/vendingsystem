@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 public class BusDataMapper {
 
 	private final ModelMapper modelMapper;
-	private final Converter<Long, Carrier> carrierIdToCarrierConverter = r -> new Carrier(
-			r.getSource(), null, null, null, null, null, null
-	);
+	private final Converter<Long, Carrier> carrierIdToCarrierConverter = r -> Carrier.builder()
+			.id(r.getSource())
+			.build();
 	private final Converter<Carrier, Long> carrierToCarrierIdConverter = r -> r.getSource().getId();
 
 	public BusDataMapper() {

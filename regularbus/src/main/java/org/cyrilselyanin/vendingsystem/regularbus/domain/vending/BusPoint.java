@@ -1,9 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -18,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class BusPoint {
     @Id
     @GeneratedValue(

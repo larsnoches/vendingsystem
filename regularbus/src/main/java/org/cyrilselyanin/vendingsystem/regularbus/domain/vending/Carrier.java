@@ -13,6 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Carrier {
     @Id
     @GeneratedValue(

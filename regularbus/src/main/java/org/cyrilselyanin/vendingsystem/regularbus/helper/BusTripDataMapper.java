@@ -41,20 +41,18 @@ public class BusTripDataMapper {
 	private final Converter<Fare, GetFareResponseDto> fareToDtoConverter;
 	private final Converter<Carrier, GetCarrierResponseDto> carrierToDtoConverter;
 
-	private final Converter<Long, Carrier> carrierIdToCarrierConverter = r -> new Carrier(
-			r.getSource(), null, null, null, null, null, null
-	);
-	private final Converter<Long, Fare> fareIdToFareConverter = r -> new Fare(
-			r.getSource(), null, null, null, null
-	);
-	private final Converter<Long, Bus> busIdToBusConverter = r -> new Bus(
-			r.getSource(), null, null, null,
-			null, null, null, null
-	);
-	private final Converter<Long, BusPoint> busPointIdToBusPointConverter = r -> new BusPoint(
-			r.getSource(), null, null, null,
-			null, null
-	);
+	private final Converter<Long, Carrier> carrierIdToCarrierConverter = r -> Carrier.builder()
+			.id(r.getSource())
+			.build();
+	private final Converter<Long, Fare> fareIdToFareConverter = r -> Fare.builder()
+			.id(r.getSource())
+			.build();
+	private final Converter<Long, Bus> busIdToBusConverter = r -> Bus.builder()
+			.id(r.getSource())
+			.build();
+	private final Converter<Long, BusPoint> busPointIdToBusPointConverter = r -> BusPoint.builder()
+			.id(r.getSource())
+			.build();
 
 	public BusTripDataMapper(
 			BusPointDataMapper busPointDataMapper,

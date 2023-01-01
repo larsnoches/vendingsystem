@@ -13,12 +13,9 @@ import org.springframework.stereotype.Component;
 public class SeatDataMapper {
 
 	private final ModelMapper modelMapper;
-	private final Converter<Long, BusTrip> busTripIdToBusTripConverter = r -> new BusTrip(
-			r.getSource(), null, null, null,
-			null, null, null, null,
-			null, null, null, null
-	);
-//	private final Converter<BusTrip, Long> carrierToCarrierIdConverter = r -> r.getSource().getId();
+	private final Converter<Long, BusTrip> busTripIdToBusTripConverter = r -> BusTrip.builder()
+			.id(r.getSource())
+			.build();
 	private final Converter<BusTrip, GetBusTripResponseDto> busTripToDtoConverter;
 
 	public SeatDataMapper(BusTripDataMapper busTripDataMapper) {
