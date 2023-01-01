@@ -39,7 +39,9 @@ public class BusTripServiceImpl implements BusTripService {
 		BusTrip busTrip = busTripDataMapper.fromBasicBusTripRequestDto(dto);
 		busTripRepo.save(busTrip);
 
-		Integer seatCount = busTrip.getBus().getSeatCount();
+		GetBusResponseDto bus = busService.getBus(dto.getBus());
+		Integer seatCount = bus.getSeatCount();
+
 		Long busTripId = busTrip.getId();
 		seatService.createSeats(seatCount, busTripId);
 	}

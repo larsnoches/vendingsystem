@@ -45,14 +45,24 @@ public class SeatServiceImpl implements SeatService {
 		log.info("Create {} seats for busTrip {}", count, busTripId);
 		List<Seat> seatList = IntStream.rangeClosed(1, count)
 				.boxed()
-				.map(i -> Seat.builder()
-						.name(i.toString())
-						.busTrip(
-								BusTrip.builder()
-										.id(busTripId)
-										.build()
-						)
-						.build())
+				.map(i -> {
+					Seat seat = new Seat();
+					seat.setName(i.toString());
+					seat.setBusTrip(BusTrip.builder()
+							.id(busTripId)
+							.build()
+					);
+					return seat;
+//							Seat.builder()
+//									.name(i.toString())
+//									.busTrip(
+//											BusTrip.builder()
+//													.id(busTripId)
+//													.build()
+//									)
+//									.build()
+//
+				})
 				.toList();
 		return seatRepo.saveAll(seatList);
 	}

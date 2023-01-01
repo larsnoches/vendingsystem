@@ -9,14 +9,12 @@ import java.lang.annotation.ElementType;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-//@Target( { ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Target( { ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-//@Constraint(validatedBy = { })
 @Constraint(validatedBy = { TicketBeforeDateValidator.class, BusTripBeforeDateValidator.class })
 @Documented
 public @interface ValidateBeforeDate {
-    String message() default "The Start date should be before the ending date.";
+    String message() default "The departure datetime should be before the arrival date.";
 
     Class<?>[] groups() default { };
 

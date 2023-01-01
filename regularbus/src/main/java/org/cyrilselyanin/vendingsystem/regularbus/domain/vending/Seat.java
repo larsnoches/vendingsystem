@@ -28,9 +28,9 @@ public class Seat {
 
     @NotBlank(message = "Название места не заполнено")
     @Size(
-            min = 2,
+            min = 1,
             max = 10,
-            message = "Название места должно быть от 2 до 10 символов")
+            message = "Название места должно быть от 1 до 10 символов")
     @Column(name = "seat_name", length = 10, nullable = false)
     private String name;
 
