@@ -1,7 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
 import lombok.*;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate.ValidateBeforeDate;
 
 import javax.persistence.*;

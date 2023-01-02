@@ -1,11 +1,7 @@
-package org.cyrilselyanin.vendingsystem.regularbus.domain;
+package org.cyrilselyanin.vendingsystem.regularbus.domain.vending;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
+import lombok.*;
 import org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate.ValidateBeforeDate;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -18,6 +14,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 @ValidateBeforeDate
 public class Ticket {
     @Id
@@ -31,109 +28,113 @@ public class Ticket {
     @Column(name = "ticket_id", nullable = false)
     private Long id;
 
-    @NotNull(message = "Issue date time isn't set")
+    @NotNull(message = "Дата и время оформления не заполнены")
     @FutureOrPresent
     @Column(name = "issue_datetime", nullable = false)
     private Timestamp issueDateTime;
 
-    @NotBlank(message = "Passenger lastname cannot be empty")
+    @NotBlank(message = "Фамилия пассажира не заполнена")
     @Size(
             min = 2,
             max = 255,
-            message = "Passenger lastname must be between 2 and 255 characters")
+            message = "Фамилия пассажира должна быть от 2 до 255 символов")
     @Column(name = "passenger_lastname", length = 255)
     private String passengerLastname;
 
-    @NotBlank(message = "Passenger firstname cannot be empty")
+    @NotBlank(message = "Имя пассажира не заполнено")
     @Size(
             min = 2,
             max = 255,
-            message = "Passenger firstname must be between 2 and 255 characters")
+            message = "Имя пассажира должно быть от 2 до 255 символов")
     @Column(name = "passenger_firstname", length = 255)
     private String passengerFirstname;
 
-    @NotBlank(message = "Passenger middlename cannot be empty")
     @Size(
             min = 2,
             max = 255,
-            message = "Passenger middlename must be between 2 and 255 characters")
+            message = "Отчество пассажира должно быть от 2 до 255 символов")
     @Column(name = "passenger_middlename", length = 255)
     private String passengerMiddlename;
 
-    @NotBlank(message = "Bus route number cannot be empty")
+    @NotBlank(message = "Номер маршрута автобуса не заполнен")
     @Size(
             min = 2,
             max = 15,
-            message = "Bus route number must be between 2 and 15 characters")
+            message = "омер маршрута автобуса должен быть от 2 до 15 символов")
     @Column(name = "bus_route_number", length = 15, nullable = false)
     private String busRouteNumber;
 
-    @NotBlank(message = "QR-code cannot be empty")
+    @NotBlank(message = "QR-код не заполнен")
     @Size(
             min = 2,
             max = 255,
-            message = "QR-code must be between 2 and 255 characters")
+            message = "QR-код должен быть от 2 до 255 символов")
     @Column(name = "qr_code", length = 255, nullable = false)
     private String qrCode;
 
-    @NotBlank(message = "Seat name cannot be empty")
+    @NotBlank(message = "Место не заполнено")
     @Size(
-            min = 2,
+            min = 1,
             max = 10,
-            message = "Seat name must be between 2 and 10 characters")
+            message = "Место должно быть от 1 до 10 символов")
     @Column(name = "seat_name", length = 10, nullable = false)
     private String seatName;
 
-    @NotBlank(message = "Name cannot be empty")
+    @NotBlank(message = "Имя перевозчика не заполнено")
     @Size(
             min = 2,
             max = 255,
-            message = "Name must be between 2 and 255 characters")
+            message = "Имя перевозчика должно быть от 2 до 255 символов")
     @Column(name = "carrier_name", length = 255, nullable = false)
     private String carrierName;
 
-    @NotBlank(message = "Departure bus point name cannot be empty")
+    @NotBlank(message = "Пункт отправления не указан")
     @Size(
             min = 2,
             max = 255,
-            message = "Departure bus point name must be between 2 and 255 characters")
+            message = "Пункт отправления должен быть от 2 до 255 символов")
     @Column(name = "departure_buspoint_name", length = 255, nullable = false)
     private String departureBuspointName;
 
-    @NotBlank(message = "Arrival bus point name cannot be empty")
+    @NotBlank(message = "Пункт прибытия не указан")
     @Size(
             min = 2,
             max = 255,
-            message = "Arrival bus point name must be between 2 and 255 characters")
+            message = "Пункт прибытия должен быть от 2 до 255 символов")
     @Column(name = "arrival_buspoint_name", length = 255, nullable = false)
     private String arrivalBuspointName;
 
-    @NotNull(message = "Departure date time isn't set")
+    @NotNull(message = "Дата и время отправления не указаны")
     @Future
     @Column(name = "departure_datetime", nullable = false)
     private Timestamp departureDateTime;
 
+    @NotNull(message = "Дата и время прибытия не указаны")
     @Future
     @Column(name = "arrival_datetime", nullable = false)
-    private Timestamp arrivalDatetime;
+    private Timestamp arrivalDateTime;
 
-    @NotNull(message = "Price isn't set")
+    @NotNull(message = "Цена не указана")
     @DecimalMin(
             value = "0.0",
             inclusive = false,
-            message = "Value must be greater")
+            message = "Значение цены должно быть больше 0")
     @Column(name = "ticket_price", nullable = false)
     private BigDecimal price;
 
-    @NotNull(message = "Bus trip isn't set")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ticket_status", nullable = false)
+    private TicketStatus status = TicketStatus.FREE;
+
+    @NotNull(message = "Маршрут не указан")
     @ManyToOne
     @JoinColumn(name = "bustrip_id", nullable = false)
     private BusTrip busTrip;
 
-    @Pattern(regexp = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
-    @Size(
-            max = 255,
-            message = "Departure bus point name must be less than 255 characters")
-    @Column(name = "user_id", length = 255)
-    private String userId;
+    @Email(message = "Такой адрес электронной почты недопустим.")
+    private String email;
+
+//    @ManyToOne
+//    @JoinColumn(name = "user_id", nullable = true)
+//    private User user;
 }

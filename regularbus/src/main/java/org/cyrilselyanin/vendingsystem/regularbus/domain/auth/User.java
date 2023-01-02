@@ -1,9 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.domain.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
@@ -20,6 +17,7 @@ import java.util.Collections;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
 public class User {
 
 	@Id
@@ -69,7 +67,10 @@ public class User {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "user_role", nullable = false)
-	private UserRole userRole = UserRole.USER_ROLE;
+	private UserRole userRole = UserRole.ROLE_USER;
+
+//	@OneToMany(mappedBy = "user")
+//	private Set<Ticket> tickets = new HashSet<>();
 
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(

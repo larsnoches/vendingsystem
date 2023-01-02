@@ -7,8 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 public interface SeatRepository extends JpaRepository<Seat, Long> {
+
+	Optional<Seat> findByName(String name);
 
 	Page<Seat> findAllByBusTripId(Long id, Pageable pageable);
 

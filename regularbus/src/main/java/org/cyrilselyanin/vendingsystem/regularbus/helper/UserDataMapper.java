@@ -20,7 +20,7 @@ public class UserDataMapper {
 			.name()
 			.equals(UserRole.ROLE_MANAGER.name());
 	private final Converter<Boolean, UserRole> userRoleToIsManagerConverter = r -> Boolean.TRUE.equals(r
-			.getSource()) ? UserRole.ROLE_MANAGER : UserRole.USER_ROLE;
+			.getSource()) ? UserRole.ROLE_MANAGER : UserRole.ROLE_USER;
 
 	public UserDataMapper() {
 		modelMapper = new ModelMapper();

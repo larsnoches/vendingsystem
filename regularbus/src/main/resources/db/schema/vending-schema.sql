@@ -261,8 +261,9 @@ CREATE TABLE public.tickets (
 	departure_datetime timestamptz NOT NULL,
 	arrival_datetime timestamptz NOT NULL,
 	ticket_price numeric NOT NULL,
+	ticket_status varchar(255) NOT NULL,
+	email varchar(255),
 	bustrip_id bigint,
-	user_id varchar(255),
 	CONSTRAINT tickets_pk PRIMARY KEY (ticket_id)
 );
 -- ddl-end --

@@ -20,6 +20,8 @@ public interface SeatService {
 	@PreAuthorize("hasRole('MANAGER')")
 	GetSeatResponseDto getSeat(Long id);
 
+	Seat getSeatByName(String name);
+
 	@PreAuthorize("hasRole('MANAGER')")
 	Page<GetSeatResponseDto> getSeatsByBusTripId(Long busTripId, Pageable pageable);
 

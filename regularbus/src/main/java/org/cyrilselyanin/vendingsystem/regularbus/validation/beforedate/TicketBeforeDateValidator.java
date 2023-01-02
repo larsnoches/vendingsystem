@@ -1,6 +1,6 @@
 package org.cyrilselyanin.vendingsystem.regularbus.validation.beforedate;
 
-import org.cyrilselyanin.vendingsystem.regularbus.domain.Ticket;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -18,7 +18,7 @@ public class TicketBeforeDateValidator implements ConstraintValidator<ValidateBe
         }
 
         return ticket.getDepartureDateTime().compareTo(
-                ticket.getArrivalDatetime()
+                ticket.getArrivalDateTime()
         ) < 0;
     }
 }

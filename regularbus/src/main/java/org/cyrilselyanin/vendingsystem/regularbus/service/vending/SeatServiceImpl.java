@@ -26,6 +26,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class SeatServiceImpl implements SeatService {
 	private static final String SEAT_NOT_FOUND_MESSAGE = "Место %d не найдено в базе данных.";
+	private static final String SEAT_NAME_NOT_FOUND_MESSAGE = "Место %s не найдено в базе данных.";
 	private static final String SEAT_NOT_FOUND_LOG_MESSAGE = "Seat {} not found in the database.";
 
 	private final SeatRepository seatRepo;
@@ -54,6 +55,18 @@ public class SeatServiceImpl implements SeatService {
 				})
 				.toList();
 		return seatRepo.saveAll(seatList);
+	}
+
+	@Override
+	public Seat getSeatByName(String name) {
+		log.info("Fetching seat {}", name);
+		return seatRepo.findByName(name)
+				.orElseThrow(() -> {
+					log.error(SEAT_NOT_FOUND_LOG_MESSAGE, name);
+					throw new IllegalStateException(
+							String.format(SEAT_NAME_NOT_FOUND_MESSAGE, name)
+					);
+				});
 	}
 
 	@Override

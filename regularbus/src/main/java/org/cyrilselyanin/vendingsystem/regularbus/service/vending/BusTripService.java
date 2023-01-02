@@ -11,7 +11,7 @@ public interface BusTripService {
 	@PreAuthorize("hasRole('MANAGER')")
 	void createBusTrip(BasicBusTripRequestDto dto);
 
-	@PreAuthorize("hasRole('MANAGER')")
+//	@PreAuthorize("hasRole('MANAGER')")
 	GetBusTripResponseDto getBusTrip(Long id);
 
 	@PreAuthorize("hasRole('MANAGER')")

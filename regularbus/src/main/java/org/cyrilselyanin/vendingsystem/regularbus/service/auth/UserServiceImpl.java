@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 		String encodedPassword = bCryptPasswordEncoder
 				.encode(user.getPassword());
 		user.setPassword(encodedPassword);
-		user.setUserRole(UserRole.USER_ROLE);
+		user.setUserRole(UserRole.ROLE_USER);
 		userRepo.save(user);
 
 		return userDataMapper.toRegistrationResponseDto(user);
