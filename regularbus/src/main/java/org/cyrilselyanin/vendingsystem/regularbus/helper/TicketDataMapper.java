@@ -5,6 +5,7 @@ import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.BasicTicketRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetPayedTicketResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetTicketResponseDto;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,7 @@ public class TicketDataMapper {
 	private final Converter<Long, BusTrip> busTripIdToBusTripConverter = r -> BusTrip.builder()
 			.id(r.getSource())
 			.build();
+	private final Converter<BusTrip, Long> busTripToBusTripIdConverter = r -> r.getSource().getId();
 	private final Converter<BusTrip, GetBusTripResponseDto> busTripToDtoConverter;
 
 	public TicketDataMapper(BusTripDataMapper busTripDataMapper, UserDataMapper userDataMapper) {
@@ -37,6 +39,11 @@ public class TicketDataMapper {
 		modelMapper.createTypeMap(Ticket.class, GetTicketResponseDto.class)
 				.addMappings(mapper -> mapper.using(busTripToDtoConverter).map(
 						Ticket::getBusTrip, GetTicketResponseDto::setBusTrip
+				));
+
+		modelMapper.createTypeMap(Ticket.class, GetPayedTicketResponseDto.class)
+				.addMappings(mapper -> mapper.using(busTripToBusTripIdConverter).map(
+						Ticket::getBusTrip, GetPayedTicketResponseDto::setBusTrip
 				));
 
 		modelMapper.createTypeMap(GetUserResponseDto.class, Ticket.class)
@@ -55,6 +62,10 @@ public class TicketDataMapper {
 
 	public GetTicketResponseDto toGetTicketResponseDto(Ticket ticket) {
 		return modelMapper.map(ticket, GetTicketResponseDto.class);
+	}
+
+	public GetPayedTicketResponseDto toGetPayedTicketResponseDto(Ticket ticket) {
+		return modelMapper.map(ticket, GetPayedTicketResponseDto.class);
 	}
 
 	public Ticket fromBasicTicketRequestDto(BasicTicketRequestDto dto) {

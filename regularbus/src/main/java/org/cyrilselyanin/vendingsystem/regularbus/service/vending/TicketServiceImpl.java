@@ -4,13 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.UserRole;
+import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Seat;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.TicketStatus;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.BasicTicketRequestDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetPayedTicketResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetTicketResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.helper.QrCodeUtil;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.TicketDataMapper;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.TimeUtil;
 import org.cyrilselyanin.vendingsystem.regularbus.repository.vending.TicketRepository;
@@ -24,9 +27,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -47,6 +53,7 @@ public class TicketServiceImpl implements TicketService {
     private final BusTripService busTripService;
     private final SeatService seatService;
     private final PaymentService paymentService;
+    private final Map<String, Optional<Ticket>> ticketMap;
 
     private final CashRegisterService cashRegisterService;
 
@@ -78,6 +85,12 @@ public class TicketServiceImpl implements TicketService {
 
         GetBusTripResponseDto busTripDto = busTripService.getBusTrip(dto.getBusTrip());
         ticketDataMapper.fromGetBusTripResponseDto(busTripDto, ticket);
+        ticket.setId(null);
+        ticket.setBusTrip(
+                BusTrip.builder()
+                        .id(dto.getBusTrip())
+                        .build()
+        );
 
         ticket.setDepartureDateTime(TimeUtil.createTimestamp(
                 String.format("%s %s", busTripDto.getDepartureDate(), busTripDto.getDepartureTime())
@@ -88,15 +101,20 @@ public class TicketServiceImpl implements TicketService {
         ticket.setQrCode(String.valueOf(ticket.hashCode()));
         ticket.setStatus(TicketStatus.WAITING_TO_PAY);
 
-        ticketRepo.save(ticket);
-        return paymentService.createPayment("test", "test");
+        BigDecimal price = busTripDto.getFare().getPrice().multiply(busTripDto.getDistance());
+        ticket.setPrice(price);
+
+//        ticketRepo.save(ticket);
+        ticketMap.put(ticket.getQrCode(), Optional.ofNullable(ticket));
+        return paymentService.createPayment("test", ticket.getQrCode());
     }
 
     @Override
-    public GetTicketResponseDto updateTicketStatusAsPayed(String qrCode) {
+    public void updateTicketStatusAsPayed(String qrCode) {
         log.info("Update ticket with qrCode {} as payed", qrCode);
 
-        Ticket ticket = ticketRepo.findByQrCode(qrCode)
+//        Ticket ticket = ticketRepo.findByQrCode(qrCode)
+        Ticket ticket = ticketMap.get(qrCode)
                 .orElseThrow(() -> {
                     log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
                     throw new IllegalStateException(
@@ -104,13 +122,32 @@ public class TicketServiceImpl implements TicketService {
                     );
                 });
         ticket.setStatus(TicketStatus.PAYED);
+        ticketRepo.save(ticket);
+//        ticketMap.remove(qrCode);
 
-        Seat seat = seatService.getSeatByName(ticket.getSeatName());
+        Seat seat = seatService.getSeatByNameAndBusTripId(
+                ticket.getSeatName(), ticket.getBusTrip().getId()
+        );
         seat.setSeatIsOccupied(true);
 
         regCash(ticket);
 
-        return ticketDataMapper.toGetTicketResponseDto(ticket);
+//        return ticketDataMapper.toGetTicketResponseDto(ticket);
+    }
+
+    @Override
+    public GetPayedTicketResponseDto getPayedTicket(String qrCode) {
+        log.info("Get payed ticket with qrCode {}", qrCode);
+
+        Ticket ticket = ticketMap.get(qrCode)
+                .orElseThrow(() -> {
+                    log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+                    throw new IllegalStateException(
+                            String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+                    );
+                });
+//        ticketMap.remove(qrCode);
+        return ticketDataMapper.toGetPayedTicketResponseDto(ticket);
     }
 
     @Override
@@ -120,7 +157,7 @@ public class TicketServiceImpl implements TicketService {
         if (isManager()) {
             optionalTicket = ticketRepo.findById(ticketId);
         } else {
-            optionalTicket = ticketRepo.findByIdAndUserEmail(ticketId, email);
+            optionalTicket = ticketRepo.findByIdAndEmail(ticketId, email);
         }
         return optionalTicket
                 .map(ticketDataMapper::toGetTicketResponseDto)
@@ -139,7 +176,7 @@ public class TicketServiceImpl implements TicketService {
         if (isManager()) {
             ticketPage = ticketRepo.findAll(pageable);
         } else {
-            ticketPage = ticketRepo.findAllByUserEmail(email, pageable);
+            ticketPage = ticketRepo.findAllByEmail(email, pageable);
         }
         List<GetTicketResponseDto> list = ticketPage.stream()
                 .map(ticketDataMapper::toGetTicketResponseDto)
@@ -154,7 +191,7 @@ public class TicketServiceImpl implements TicketService {
         if (isManager()) {
             optionalExist = ticketRepo.findById(ticketId);
         } else {
-            optionalExist = ticketRepo.findByIdAndUserEmail(ticketId, dto.getEmail());
+            optionalExist = ticketRepo.findByIdAndEmail(ticketId, dto.getEmail());
         }
         Ticket exist = optionalExist.orElseThrow(() -> {
             log.error(TICKET_NOT_FOUND_LOG_MESSAGE, ticketId);
@@ -188,7 +225,7 @@ public class TicketServiceImpl implements TicketService {
     @Override
     public void removeTicket(Long id) {
         log.info("Removing ticket {}", id);
-        ticketRepo.findById(id)
+        Ticket ticket = ticketRepo.findById(id)
                 .orElseThrow(() -> {
                     log.error(TICKET_NOT_FOUND_LOG_MESSAGE, id);
                     throw new IllegalStateException(
@@ -196,11 +233,38 @@ public class TicketServiceImpl implements TicketService {
                     );
                 });
         ticketRepo.deleteById(id);
+        Seat seat = seatService.getSeatByNameAndBusTripId(
+                ticket.getSeatName(), ticket.getBusTrip().getId()
+        );
+        if (!seatService.isSeatIsCoveredByAnother(seat) && seat.getSeatIsOccupied()) {
+            seat.setSeatIsOccupied(false);
+        }
     }
 
     @Override
     public void regCash(Ticket ticket) {
         cashRegisterService.regCash(ticket);
+    }
+
+    public BufferedImage generateQrCode(Long ticketId, String qrCode) throws Exception {
+        if (!isUser() && !isManager()) {
+            ticketMap.get(qrCode)
+                    .orElseThrow(() -> {
+                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+                        throw new IllegalStateException(
+                                String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+                        );
+                    });
+        } else {
+            ticketRepo.findByIdAndQrCode(ticketId, qrCode)
+                    .orElseThrow(() -> {
+                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+                        throw new IllegalStateException(
+                                String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+                        );
+                    });
+        }
+        return QrCodeUtil.generateQrCodeImage(qrCode);
     }
 
     private boolean isManager() {

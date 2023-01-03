@@ -13,6 +13,8 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
 	Optional<Seat> findByName(String name);
 
+	Optional<Seat> findByNameAndBusTripId(String name, Long busTripId);
+
 	Page<Seat> findAllByBusTripId(Long id, Pageable pageable);
 
 	List<Seat> findAllByBusTripId(Long id);

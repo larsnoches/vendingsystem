@@ -39,7 +39,12 @@ public class SecurityConfig {
 				.cors()
 				.and()
 				.authorizeRequests()
-				.antMatchers("/api/v*/auth/**", "/api/v*/users/register", "/api/v*/busTrips/search")
+				.antMatchers(
+						"/api/v*/auth/**",
+						"/api/v*/users/register",
+						"/api/v*/busTrips/search",
+						"/api/v*/tickets/**/qrcode"
+				)
 				.permitAll()
 //				.antMatchers("/api/v*/what").hasRole("MANAGER")
 				.anyRequest()
@@ -72,10 +77,14 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("*"));
 //		configuration.setAllowedOrigins(Arrays.asList(
-//				"http://127.0.0.1:4200",
 //				"http://127.0.0.1:4200/",
+//				"http://127.0.0.1:4200",
+//				"http://localhost:4200/",
 //				"http://localhost:4200",
-//				"http://localhost:4200/"
+//				"http://localhost:8080/",
+//				"http://localhost:8080",
+//				"http://127.0.0.1:8080/",
+//				"http://127.0.0.1:8080"
 //		));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowedMethods(Arrays.asList(

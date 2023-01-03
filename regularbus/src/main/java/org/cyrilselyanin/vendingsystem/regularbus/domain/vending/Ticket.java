@@ -29,7 +29,7 @@ public class Ticket {
     private Long id;
 
     @NotNull(message = "Дата и время оформления не заполнены")
-    @FutureOrPresent
+//    @FutureOrPresent
     @Column(name = "issue_datetime", nullable = false)
     private Timestamp issueDateTime;
 

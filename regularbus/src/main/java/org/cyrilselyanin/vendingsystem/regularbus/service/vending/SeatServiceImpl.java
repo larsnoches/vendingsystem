@@ -70,6 +70,18 @@ public class SeatServiceImpl implements SeatService {
 	}
 
 	@Override
+	public Seat getSeatByNameAndBusTripId(String name, Long busTripId) {
+		log.info("Fetching seat {} {}", name, busTripId);
+		return seatRepo.findByNameAndBusTripId(name, busTripId)
+				.orElseThrow(() -> {
+					log.error(SEAT_NOT_FOUND_LOG_MESSAGE, name);
+					throw new IllegalStateException(
+							String.format(SEAT_NAME_NOT_FOUND_MESSAGE, name)
+					);
+				});
+	}
+
+	@Override
 	public GetSeatResponseDto getSeat(Long id) {
 		log.info("Fetching seat {}", id);
 		return seatRepo.findById(id)
@@ -112,7 +124,8 @@ public class SeatServiceImpl implements SeatService {
 				.map(seatDataMapper::toGetSeatResponseDto)
 				.map(seat -> {
 					prevSeatList.forEach(prevSeat -> {
-						if (prevSeat.getId().equals(seat.getId()) &&
+//						if (prevSeat.getId().equals(seat.getId()) &&
+						if (prevSeat.getName().equals(seat.getName()) &&
 								prevSeat.getSeatIsOccupied()) {
 							seat.setSeatIsOccupied(true);
 						}
@@ -120,6 +133,15 @@ public class SeatServiceImpl implements SeatService {
 					return seat;
 				})
 				.toList();
+	}
+
+	@Override
+	public Boolean isSeatIsCoveredByAnother(Seat seat) {
+		return seatRepo.findAllByBusTripArrivalDateTimeGreaterThanAndBusTripBusId(
+						seat.getBusTrip().getDepartureDateTime(),
+						seat.getBusTrip().getBus().getId()
+				).stream()
+				.anyMatch(s -> s.getName().equals(seat.getName()) && s.getSeatIsOccupied());
 	}
 
 	@Override

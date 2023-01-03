@@ -10,8 +10,9 @@ import java.util.Optional;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-	Optional<Ticket> findByIdAndUserEmail(Long ticketId, String email);
+	Optional<Ticket> findByIdAndEmail(Long ticketId, String email);
 	Optional<Ticket> findByQrCode(String qrCode);
-	Page<Ticket> findAllByUserEmail(String email, Pageable pageable);
+	Optional<Ticket> findByIdAndQrCode(Long ticketId, String qrCode);
+	Page<Ticket> findAllByEmail(String email, Pageable pageable);
 
 }

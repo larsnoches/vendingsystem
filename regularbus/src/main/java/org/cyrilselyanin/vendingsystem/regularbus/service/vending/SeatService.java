@@ -22,10 +22,15 @@ public interface SeatService {
 
 	Seat getSeatByName(String name);
 
+	Seat getSeatByNameAndBusTripId(String name, Long busTripId);
+
 	@PreAuthorize("hasRole('MANAGER')")
 	Page<GetSeatResponseDto> getSeatsByBusTripId(Long busTripId, Pageable pageable);
 
 	List<GetSeatResponseDto> getSeats(Long busTripId, Long busId, String dateTime);
+
+	@PreAuthorize("hasRole('MANAGER')")
+	Boolean isSeatIsCoveredByAnother(Seat seat);
 
 	@PreAuthorize("hasRole('MANAGER')")
 	void updateSeat(Long id, BasicSeatRequestDto dto);
