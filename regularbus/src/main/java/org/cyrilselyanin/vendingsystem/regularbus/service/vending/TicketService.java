@@ -17,7 +17,7 @@ public interface TicketService {
 
     void updateTicketStatusAsPayed(String qrCode);
 
-    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == email)")
+    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == #email)")
     void updateTicketStatusAsWaitingToReturn(Long id, String email);
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -27,13 +27,13 @@ public interface TicketService {
 
     BufferedImage generateQrCodeImage(Long ticketId, String qrCode) throws Exception;
 
-    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == email)")
+    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == #email)")
     GetTicketResponseDto getTicket(Long ticketId, String email);
 
-    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == email)")
+    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == #email)")
     Page<GetTicketResponseDto> getAllTickets(String email, Pageable pageable);
 
-    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == dto.email)")
+    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == #dto.email)")
     void updateTicket(Long ticketId, BasicTicketRequestDto dto);
 
     @PreAuthorize("hasRole('MANAGER')")
