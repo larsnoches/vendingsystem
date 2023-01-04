@@ -105,12 +105,12 @@ public class Ticket {
     private String arrivalBuspointName;
 
     @NotNull(message = "Дата и время отправления не указаны")
-    @Future
+//    @Future
     @Column(name = "departure_datetime", nullable = false)
     private Timestamp departureDateTime;
 
     @NotNull(message = "Дата и время прибытия не указаны")
-    @Future
+//    @Future
     @Column(name = "arrival_datetime", nullable = false)
     private Timestamp arrivalDateTime;
 

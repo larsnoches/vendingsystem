@@ -13,7 +13,7 @@ public class ConfirmationRequestDto {
 
 	private String type = "redirect";
 
-	private String redirectUrl = "http://127.0.0.1:8080/api/v1/tickets/updatePaymentStatus?qrcode=%s";
+	private String redirectUrl = "http://127.0.0.1:8080/api/v1/tickets/update-payment-status?qrcode=%s";
 
 	@JsonIgnore
 	private String qrCode;

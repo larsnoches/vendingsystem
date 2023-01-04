@@ -7,9 +7,8 @@ import org.springframework.http.converter.BufferedImageHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 public class TicketConfig {
@@ -20,8 +19,8 @@ public class TicketConfig {
 	}
 
 	@Bean
-	public Map<String, Optional<Ticket>> ticketMap() {
-		return new HashMap<>();
+	public Map<String, Ticket> ticketMap() {
+		return new ConcurrentHashMap<>();
 	}
 
 }

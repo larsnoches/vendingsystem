@@ -29,7 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
 	public String createPayment(String amount, String qrCode) throws JsonProcessingException {
 		log.info("Create payment for qrcode {}", qrCode);
 		if (amount.equals("test")) {
-			return String.format("http://localhost:8080/api/v1/tickets/updatePaymentStatus?qrcode=%s", qrCode);
+			return String.format("http://localhost:8080/api/v1/tickets/update-payment-status?qrcode=%s", qrCode);
 		}
 
 		CreatePaymentRequestDto requestDto = new CreatePaymentRequestDto();

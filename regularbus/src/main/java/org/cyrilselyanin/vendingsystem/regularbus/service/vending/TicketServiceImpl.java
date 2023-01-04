@@ -53,7 +53,7 @@ public class TicketServiceImpl implements TicketService {
     private final BusTripService busTripService;
     private final SeatService seatService;
     private final PaymentService paymentService;
-    private final Map<String, Optional<Ticket>> ticketMap;
+    private final Map<String, Ticket> ticketMap;
 
     private final CashRegisterService cashRegisterService;
 
@@ -104,8 +104,7 @@ public class TicketServiceImpl implements TicketService {
         BigDecimal price = busTripDto.getFare().getPrice().multiply(busTripDto.getDistance());
         ticket.setPrice(price);
 
-//        ticketRepo.save(ticket);
-        ticketMap.put(ticket.getQrCode(), Optional.ofNullable(ticket));
+        ticketMap.put(ticket.getQrCode(), ticket);
         return paymentService.createPayment("test", ticket.getQrCode());
     }
 
@@ -113,41 +112,88 @@ public class TicketServiceImpl implements TicketService {
     public void updateTicketStatusAsPayed(String qrCode) {
         log.info("Update ticket with qrCode {} as payed", qrCode);
 
-//        Ticket ticket = ticketRepo.findByQrCode(qrCode)
-        Ticket ticket = ticketMap.get(qrCode)
+        try {
+            Ticket ticket = ticketMap.get(qrCode);
+
+            ticket.setStatus(TicketStatus.PAYED);
+            ticketRepo.save(ticket);
+
+            Seat seat = seatService.getSeatByNameAndBusTripId(
+                    ticket.getSeatName(), ticket.getBusTrip().getId()
+            );
+            seat.setSeatIsOccupied(true);
+
+            regCash(ticket);
+            removeOldTicketsFromMap();
+        } catch (NullPointerException | ClassCastException ex) {
+            log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+            throw new IllegalStateException(
+                    String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+            );
+        }
+    }
+
+    public void updateTicketStatusAsWaitingToReturn(Long id, String email) {
+        log.info("Update ticket with id {} as waiting to return", id);
+
+        Ticket ticket = ticketRepo.findByIdAndEmail(id, email)
                 .orElseThrow(() -> {
-                    log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+                    log.error(TICKET_NOT_FOUND_LOG_MESSAGE, id);
                     throw new IllegalStateException(
-                            String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+                            String.format(TICKET_NOT_FOUND_MESSAGE, id)
                     );
                 });
-        ticket.setStatus(TicketStatus.PAYED);
-        ticketRepo.save(ticket);
-//        ticketMap.remove(qrCode);
+        ticket.setStatus(TicketStatus.WAITING_TO_RETURN);
+    }
+
+    public void updateTicketStatusAsReturned(Long id) {
+        log.info("Update ticket with id {} as returned", id);
+
+        Ticket ticket = ticketRepo.findById(id)
+                .orElseThrow(() -> {
+                    log.error(TICKET_NOT_FOUND_LOG_MESSAGE, id);
+                    throw new IllegalStateException(
+                            String.format(TICKET_NOT_FOUND_MESSAGE, id)
+                    );
+                });
+        ticket.setStatus(TicketStatus.RETURNED);
 
         Seat seat = seatService.getSeatByNameAndBusTripId(
                 ticket.getSeatName(), ticket.getBusTrip().getId()
         );
-        seat.setSeatIsOccupied(true);
-
-        regCash(ticket);
-
-//        return ticketDataMapper.toGetTicketResponseDto(ticket);
+        if (!seatService.isSeatIsCoveredByAnother(seat) && seat.getSeatIsOccupied()) {
+            seat.setSeatIsOccupied(false);
+        }
     }
 
     @Override
     public GetPayedTicketResponseDto getPayedTicket(String qrCode) {
         log.info("Get payed ticket with qrCode {}", qrCode);
+        try {
+            Ticket ticket = ticketMap.get(qrCode);
+            return ticketDataMapper.toGetPayedTicketResponseDto(ticket);
+        } catch (NullPointerException | ClassCastException ex) {
+            log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+            throw new IllegalStateException(
+                    String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+            );
+        }
+    }
 
-        Ticket ticket = ticketMap.get(qrCode)
-                .orElseThrow(() -> {
-                    log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
-                    throw new IllegalStateException(
-                            String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
-                    );
-                });
-//        ticketMap.remove(qrCode);
-        return ticketDataMapper.toGetPayedTicketResponseDto(ticket);
+    @Override
+    public BufferedImage generateQrCodeImage(Long ticketId, String qrCode) throws Exception {
+        try {
+            ticketMap.get(qrCode);
+        } catch (NullPointerException | ClassCastException ex) {
+            ticketRepo.findByIdAndQrCode(ticketId, qrCode)
+                    .orElseThrow(() -> {
+                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+                        throw new IllegalStateException(
+                                String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
+                        );
+                    });
+        }
+        return QrCodeUtil.generateQrCodeImage(qrCode);
     }
 
     @Override
@@ -246,27 +292,6 @@ public class TicketServiceImpl implements TicketService {
         cashRegisterService.regCash(ticket);
     }
 
-    public BufferedImage generateQrCode(Long ticketId, String qrCode) throws Exception {
-        if (!isUser() && !isManager()) {
-            ticketMap.get(qrCode)
-                    .orElseThrow(() -> {
-                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
-                        throw new IllegalStateException(
-                                String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
-                        );
-                    });
-        } else {
-            ticketRepo.findByIdAndQrCode(ticketId, qrCode)
-                    .orElseThrow(() -> {
-                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
-                        throw new IllegalStateException(
-                                String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
-                        );
-                    });
-        }
-        return QrCodeUtil.generateQrCodeImage(qrCode);
-    }
-
     private boolean isManager() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getAuthorities().stream()
@@ -284,113 +309,28 @@ public class TicketServiceImpl implements TicketService {
         return authentication.getName();
     }
 
-//    public TicketServiceImpl(
-//            TicketRepository ticketRepository,
-////            BusTripRepository busTripRepository,
-//            CashRegisterService cashRegisterService
-//    ) {
-//        this.ticketRepository = ticketRepository;
-////        this.busTripRepository = busTripRepository;
-//        this.cashRegisterService = cashRegisterService;
-//    }
-//
-//    @Override
-//    public Ticket create(Ticket ticket) {
-//        return ticketRepository.save(ticket);
-//    }
-//
-//    @Override
-//    public Optional<Ticket> getTicket(Long ticketId) {
-//        if (isAdmin()) return ticketRepository.findById(ticketId);
-//        if (isUser()) {
-//            String userId = getUserId();
-//            return ticketRepository.findByIdAndUserId(ticketId, userId);
-//        }
-//
-//        return Optional.empty();
-//    }
-//
-//    @Override
-//    public List<Ticket> getAllTickets() {
-//        if (isAdmin()) return ticketRepository.findAll();
-//        if (isUser()) {
-//            String userId = getUserId();
-//            return ticketRepository.findAllByUserId(userId);
-//        }
-//
-//        return List.of();
-//    }
-//
-//    @Override
-//    public Ticket update(Ticket ticket, Long id) {
-//        return ticketRepository.findById(id)
-//                .map(t -> {
-//                   t.setIssueDateTime(ticket.getIssueDateTime());
-//                   t.setPassengerLastname(ticket.getPassengerLastname());
-//                   t.setPassengerFirstname(ticket.getPassengerFirstname());
-//                   t.setPassengerMiddlename(ticket.getPassengerMiddlename());
-//                   t.setBusRouteNumber(ticket.getBusRouteNumber());
-//                   t.setQrCode(ticket.getQrCode());
-//                   t.setSeatName(ticket.getSeatName());
-//                   t.setCarrierName(ticket.getCarrierName());
-//                   t.setDepartureBuspointName(ticket.getDepartureBuspointName());
-//                   t.setArrivalBuspointName(ticket.getArrivalBuspointName());
-//                   t.setDepartureDateTime(ticket.getDepartureDateTime());
-//                   t.setArrivalDatetime(ticket.getArrivalDatetime());
-//                   t.setPrice(ticket.getPrice());
-//                   t.setBusTrip(ticket.getBusTrip());
-//                   t.setUserId(ticket.getUserId());
-//                   return ticketRepository.save(t);
-//                })
-//                .orElseGet(() -> {
-//                    ticket.setId(id);
-//                    return ticketRepository.save(ticket);
-//                });
-//    }
-//
-//    @Override
-//    public void delete(Long id) {
-//        ticketRepository.deleteById(id);
-//    }
-//
-//    @Override
-//    public Optional<BusTrip> getTicketBusTrip(Long ticketId) {
-//        if (isAdmin()) {
-//            return ticketRepository.findById(ticketId)
-//                    .map(Ticket::getBusTrip);
-//        }
-//        if (isUser()) {
-//            String userId = getUserId();
-//            return ticketRepository.findByIdAndUserId(ticketId, userId)
-//                    .map(Ticket::getBusTrip);
-//        }
-//
-//        return Optional.empty();
-//    }
-//
-//    private boolean isUser() {
-//        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return authentication.getAuthorities().stream()
-//                .anyMatch(a -> a.getAuthority().equals("ROLE_USER"));
-//    }
-//
-//    private String getUserId() {
-//        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return authentication.getName();
-//    }
-//
-//    private boolean isAdmin() {
-//        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        return authentication.getAuthorities().stream()
-//                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
-//    }
-//
-//    /**
-//     * Reg cash via cashRegister service
-//     * @param ticket Ticket instance
-//     */
-//    @Override
-//    public void regCash(Ticket ticket) {
-//        cashRegisterService.regCash(ticket);
-//    }
+    private void removeOldTicketsFromMap() {
+        Timestamp waitingDatetime = TimeUtil.createTimestampGreater(1);
+        Timestamp payedDatetime = TimeUtil.createTimestampGreater(2);
+        List<String> list = ticketMap.values().stream()
+                .filter(ticket -> {
+                    try {
+                        if (ticket.getIssueDateTime().after(payedDatetime)) {
+                            return true;
+                        }
+                        if (
+                                ticket.getStatus().equals(TicketStatus.WAITING_TO_PAY) &&
+                                        ticket.getIssueDateTime().after(waitingDatetime)
+                        ) {
+                            return true;
+                        }
+                    } catch (NullPointerException | ClassCastException ex) {
+                        return false;
+                    }
+                    return false;
+                })
+                .map(Ticket::getQrCode)
+                .toList();
+        list.forEach(ticketMap::remove);
+    }
 }

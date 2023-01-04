@@ -46,7 +46,6 @@ public class TicketController {
         try {
             String paymentUrl = ticketService.createTicket(dto);
             httpServletResponse.sendRedirect(paymentUrl);
-//            return paymentUrl;
         } catch (RuntimeException | JsonProcessingException ex) {
             log.error("There is a create ticket error.", ex.getCause());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
@@ -56,34 +55,62 @@ public class TicketController {
         }
     }
 
-    @GetMapping("/tickets/updatePaymentStatus")
+    @GetMapping("/tickets/update-payment-status")
     public UpdateTicketStatusAsPayedResponseDto updateTicketStatusAsPayed(
             @NotBlank(message = "Неверный запрос билета")
             @RequestParam("qrcode")
-            String qrCode,
-            HttpServletResponse httpServletResponse
+            String qrCode/*,
+            HttpServletResponse httpServletResponse*/
     ) {
         try {
             ticketService.updateTicketStatusAsPayed(qrCode);
             String urlString = String.format(
-                    "http://127.0.0.1:4200/tickets/viewPayed?qrcode=%s",
+                    "http://127.0.0.1:4200/tickets/view-payed?qrcode=%s",
                     qrCode
             );
-            UpdateTicketStatusAsPayedResponseDto responseDto = UpdateTicketStatusAsPayedResponseDto.builder()
+            return UpdateTicketStatusAsPayedResponseDto.builder()
                     .path(urlString)
                     .build();
-//            httpServletResponse.sendRedirect(urlString);
-            return responseDto;
         } catch (RuntimeException ex) {
             log.error("There is an update ticket as payed error.", ex.getCause());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
-        } /*catch (IOException ex) {
-            log.error("There is an update ticket as payed redirect error.", ex.getCause());
-            throw new RuntimeException(ex);
-        }*/
+        }
     }
 
-    @GetMapping("/tickets/payedTicket")
+    @GetMapping("/tickets/{ticketId}/update-status/waiting-to-return")
+    public void updateTicketStatusAsWaitingToReturn(
+            @NotNull
+            @Min(value = 0L, message = WRONG_TICKET_ID_ERR_MESSAGE)
+            @PathVariable
+            Long ticketId,
+            @NotBlank(message = WRONG_EMAIL_ERR_MESSAGE)
+            @RequestParam
+            String email
+    ) {
+        try {
+            ticketService.updateTicketStatusAsWaitingToReturn(ticketId, email);
+        } catch (RuntimeException ex) {
+            log.error("There is an update ticket as waiting to return error.", ex.getCause());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
+    }
+
+    @GetMapping("/tickets/{ticketId}/update-status/returned")
+    public void updateTicketStatusAsReturned(
+            @NotNull
+            @Min(value = 0L, message = WRONG_TICKET_ID_ERR_MESSAGE)
+            @PathVariable
+            Long ticketId
+    ) {
+        try {
+            ticketService.updateTicketStatusAsReturned(ticketId);
+        } catch (RuntimeException ex) {
+            log.error("There is an update ticket as returned error.", ex.getCause());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        }
+    }
+
+    @GetMapping("/tickets/payed-ticket")
     public GetPayedTicketResponseDto getPayedTicket(
             @NotBlank(message = "Неверный запрос билета")
             @RequestParam("qrcode")
@@ -116,7 +143,7 @@ public class TicketController {
     }
 
     @GetMapping(value = "/tickets/{ticketId}/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<BufferedImage> generateQrCode(
+    public ResponseEntity<BufferedImage> generateQrCodeImage(
             @NotNull
             @Min(value = 0L, message = WRONG_TICKET_ID_ERR_MESSAGE)
             @PathVariable
@@ -126,7 +153,7 @@ public class TicketController {
             String value
     ) {
         try {
-            return ResponseEntity.ok(ticketService.generateQrCode(ticketId, value));
+            return ResponseEntity.ok(ticketService.generateQrCodeImage(ticketId, value));
         } catch (Exception ex) {
             log.error("There is a generate qrcode image error.", ex.getCause());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

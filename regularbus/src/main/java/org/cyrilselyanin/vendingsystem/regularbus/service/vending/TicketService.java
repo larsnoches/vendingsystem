@@ -16,7 +16,16 @@ public interface TicketService {
     String createTicket(BasicTicketRequestDto dto) throws JsonProcessingException;
 
     void updateTicketStatusAsPayed(String qrCode);
+
+    @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == email)")
+    void updateTicketStatusAsWaitingToReturn(Long id, String email);
+
+    @PreAuthorize("hasRole('MANAGER')")
+    void updateTicketStatusAsReturned(Long id);
+
     GetPayedTicketResponseDto getPayedTicket(String qrCode);
+
+    BufferedImage generateQrCodeImage(Long ticketId, String qrCode) throws Exception;
 
     @PreAuthorize("hasRole('MANAGER') or (hasRole('USER') and principal.username == email)")
     GetTicketResponseDto getTicket(Long ticketId, String email);
@@ -31,7 +40,5 @@ public interface TicketService {
     void removeTicket(Long id);
 
     void regCash(Ticket ticket);
-
-    BufferedImage generateQrCode(Long ticketId, String qrCode) throws Exception;
 
 }
