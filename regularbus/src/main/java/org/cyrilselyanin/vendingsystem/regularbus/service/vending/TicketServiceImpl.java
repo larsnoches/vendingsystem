@@ -136,13 +136,24 @@ public class TicketServiceImpl implements TicketService {
     public void updateTicketStatusAsWaitingToReturn(Long id, String email) {
         log.info("Update ticket with id {} as waiting to return", id);
 
-        Ticket ticket = ticketRepo.findByIdAndEmail(id, email)
-                .orElseThrow(() -> {
-                    log.error(TICKET_NOT_FOUND_LOG_MESSAGE, id);
-                    throw new IllegalStateException(
-                            String.format(TICKET_NOT_FOUND_MESSAGE, id)
-                    );
-                });
+        Ticket ticket;
+        if (isManager()) {
+            ticket = ticketRepo.findById(id)
+                    .orElseThrow(() -> {
+                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, id);
+                        throw new IllegalStateException(
+                                String.format(TICKET_NOT_FOUND_MESSAGE, id)
+                        );
+                    });
+        } else {
+            ticket = ticketRepo.findByIdAndEmail(id, email)
+                    .orElseThrow(() -> {
+                        log.error(TICKET_NOT_FOUND_LOG_MESSAGE, id);
+                        throw new IllegalStateException(
+                                String.format(TICKET_NOT_FOUND_MESSAGE, id)
+                        );
+                    });
+        }
         ticket.setStatus(TicketStatus.WAITING_TO_RETURN);
     }
 
