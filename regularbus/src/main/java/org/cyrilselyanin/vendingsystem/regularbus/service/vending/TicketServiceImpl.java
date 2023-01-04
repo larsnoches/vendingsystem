@@ -172,7 +172,8 @@ public class TicketServiceImpl implements TicketService {
         Seat seat = seatService.getSeatByNameAndBusTripId(
                 ticket.getSeatName(), ticket.getBusTrip().getId()
         );
-        if (!seatService.isSeatIsCoveredByAnother(seat) && seat.getSeatIsOccupied()) {
+        boolean isSeatIsCoveredByAnother = seatService.isSeatIsCoveredByAnother(seat);
+        if (!isSeatIsCoveredByAnother && seat.getSeatIsOccupied()) {
             seat.setSeatIsOccupied(false);
         }
     }

@@ -141,7 +141,10 @@ public class SeatServiceImpl implements SeatService {
 						seat.getBusTrip().getDepartureDateTime(),
 						seat.getBusTrip().getBus().getId()
 				).stream()
-				.anyMatch(s -> s.getName().equals(seat.getName()) && s.getSeatIsOccupied());
+				.anyMatch(s -> {
+					if (s.getId().equals(seat.getId())) return false;
+					return s.getName().equals(seat.getName()) && s.getSeatIsOccupied();
+				});
 	}
 
 	@Override
