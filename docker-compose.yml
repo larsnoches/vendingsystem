@@ -77,6 +77,24 @@ services:
 #      - CASHREG_RABBITMQ_USERNAME=what
 #      - CASHREG_RABBITMQ_PASSWORD=what
 
+#  regularbus:
+#    container_name: regularbus-container
+#    image: regularbus:latest
+#    build:
+#      dockerfile: "regularbus/Dockerfile"
+#    depends_on:
+#      - rabbitmq
+#    links:
+#      - "rabbitmq:rabbitmq"
+#      - "regularbuspostgres:regularbuspostgres"
+#    environment:
+#      - CASHREG_RABBITMQ_HOST=rabbitmq
+#      - CASHREG_RABBITMQ_USERNAME=what
+#      - CASHREG_RABBITMQ_PASSWORD=what
+#      - REGULARBUS_DB_HOST=regularbuspostgres
+#      - REGULARBUS_SERVER_PORT=8080
+#      - REGULARBUS_APPLICATION_NAME=vending_system_regularbus
+
 #  webserver:
 #    image: nginx:alpine
 #    container_name: webserver
