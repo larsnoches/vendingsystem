@@ -97,7 +97,6 @@
     </dependencies>
 
     <modules>
-        <module>auth</module>
         <module>regularbus</module>
         <module>cashregister</module>
     </modules>
