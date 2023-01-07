@@ -1,0 +1,12 @@
+cashregister:
+  sbis-auth:
+    appClientId: ${SBIS_AUTH_APPCLIENT_ID:""}
+    appSecret: ${SBIS_AUTH_APPSECRET:""}
+    secretKey: ${SBIS_AUTH_SECRETKEY:""}
+
+spring:
+  rabbitmq:
+    host: ${CASHREG_RABBITMQ_HOST:localhost}
+    port: ${CASHREG_RABBITMQ_PORT:5672}
+    username: ${CASHREG_RABBITMQ_USERNAME:guest}
+    password: ${CASHREG_RABBITMQ_PASSWORD:guest}

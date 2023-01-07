@@ -67,7 +67,7 @@ services:
 #    container_name: cashregister-container
 #    image: cashregister:latest
 #    build:
-#      dockerfile: Dockerfile
+#      dockerfile: "cashregister/Dockerfile"
 #    depends_on:
 #      - rabbitmq
 #    links:
