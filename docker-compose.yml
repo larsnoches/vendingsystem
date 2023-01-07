@@ -73,9 +73,9 @@ services:
 #    links:
 #      - "rabbitmq:rabbitmq"
 #    environment:
-#      - CASHREG_RABBITMQ_HOST=rabbitmq
-#      - CASHREG_RABBITMQ_USERNAME=what
-#      - CASHREG_RABBITMQ_PASSWORD=what
+#      CASHREG_RABBITMQ_HOST: "${CASHREG_RABBITMQ_HOST:-rabbitmq}"
+#      CASHREG_RABBITMQ_USERNAME: "${CASHREG_RABBITMQ_USERNAME:-what}"
+#      CASHREG_RABBITMQ_PASSWORD: "${CASHREG_RABBITMQ_PASSWORD:-what}"
 
 #  regularbus:
 #    container_name: regularbus-container
@@ -88,12 +88,12 @@ services:
 #      - "rabbitmq:rabbitmq"
 #      - "regularbuspostgres:regularbuspostgres"
 #    environment:
-#      - CASHREG_RABBITMQ_HOST=rabbitmq
-#      - CASHREG_RABBITMQ_USERNAME=what
-#      - CASHREG_RABBITMQ_PASSWORD=what
-#      - REGULARBUS_DB_HOST=regularbuspostgres
-#      - REGULARBUS_SERVER_PORT=8080
-#      - REGULARBUS_APPLICATION_NAME=vending_system_regularbus
+#      CASHREG_RABBITMQ_HOST: "${CASHREG_RABBITMQ_HOST:-rabbitmq}"
+#      CASHREG_RABBITMQ_USERNAME: "${CASHREG_RABBITMQ_USERNAME:-what}"
+#      CASHREG_RABBITMQ_PASSWORD: "${CASHREG_RABBITMQ_PASSWORD:-what}"
+#      REGULARBUS_DB_HOST: "${REGULARBUS_DB_HOST:-regularbuspostgres}"
+#      REGULARBUS_SERVER_PORT: "${REGULARBUS_SERVER_PORT:-8080}"
+#      REGULARBUS_APPLICATION_NAME: "${REGULARBUS_APPLICATION_NAME:-vending_system_regularbus}"
 
 #  webserver:
 #    image: nginx:alpine
@@ -101,7 +101,7 @@ services:
 #    restart: unless-stopped
 #    tty: true
 #    ports:
-#      - "8282:80"
+#      - "${WEBSERVER_PORT:-8282}:80"
 ##      - "443:443"
 #    volumes:
 #      - ./pub:/usr/share/nginx/html
