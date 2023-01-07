@@ -43,7 +43,12 @@ public class SecurityConfig {
 						"/api/v*/auth/**",
 						"/api/v*/users/register",
 						"/api/v*/busTrips/search",
-						"/api/v*/tickets/**/qrcode"
+						"/api/v*/busTrips/one/**",
+						"/api/v*/tickets/create",
+						"/api/v*/tickets/update-payment-status",
+						"/api/v*/tickets/**/qrcode",
+						"/api/v*/tickets/payed-ticket",
+						"/api/v*/seats/busTrip/**/list"
 				)
 				.permitAll()
 //				.antMatchers("/api/v*/what").hasRole("MANAGER")

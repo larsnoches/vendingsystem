@@ -52,7 +52,7 @@ public class BusTripController {
 		}
 	}
 
-	@GetMapping("/busTrips/{id}")
+	@GetMapping("/busTrips/one/{id}")
 	public GetBusTripResponseDto getBusTrip(
 			@NotNull
 			@Min(value = 0L, message = WRONG_BUSTRIP_ID_ERR_MESSAGE)
