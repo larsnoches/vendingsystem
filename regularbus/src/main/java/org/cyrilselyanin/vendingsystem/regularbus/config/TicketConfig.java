@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.config;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketCacheDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.BufferedImageHttpMessageConverter;
@@ -19,7 +20,7 @@ public class TicketConfig {
 	}
 
 	@Bean
-	public Map<String, Ticket> ticketMap() {
+	public Map<String, TicketCacheDto> ticketMap() {
 		return new ConcurrentHashMap<>();
 	}
 

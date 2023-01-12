@@ -15,7 +15,6 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @EqualsAndHashCode
-@ValidateBeforeDate
 public class Ticket {
     @Id
     @GeneratedValue(
@@ -56,13 +55,13 @@ public class Ticket {
     @Column(name = "passenger_middlename", length = 255)
     private String passengerMiddlename;
 
-    @NotBlank(message = "Номер маршрута автобуса не заполнен")
-    @Size(
-            min = 2,
-            max = 15,
-            message = "омер маршрута автобуса должен быть от 2 до 15 символов")
-    @Column(name = "bus_route_number", length = 15, nullable = false)
-    private String busRouteNumber;
+//    @NotBlank(message = "Номер маршрута автобуса не заполнен")
+//    @Size(
+//            min = 2,
+//            max = 15,
+//            message = "омер маршрута автобуса должен быть от 2 до 15 символов")
+//    @Column(name = "bus_route_number", length = 15, nullable = false)
+//    private String busRouteNumber;
 
     @NotBlank(message = "QR-код не заполнен")
     @Size(
@@ -80,39 +79,39 @@ public class Ticket {
     @Column(name = "seat_name", length = 10, nullable = false)
     private String seatName;
 
-    @NotBlank(message = "Имя перевозчика не заполнено")
-    @Size(
-            min = 2,
-            max = 255,
-            message = "Имя перевозчика должно быть от 2 до 255 символов")
-    @Column(name = "carrier_name", length = 255, nullable = false)
-    private String carrierName;
+//    @NotBlank(message = "Имя перевозчика не заполнено")
+//    @Size(
+//            min = 2,
+//            max = 255,
+//            message = "Имя перевозчика должно быть от 2 до 255 символов")
+//    @Column(name = "carrier_name", length = 255, nullable = false)
+//    private String carrierName;
 
-    @NotBlank(message = "Пункт отправления не указан")
-    @Size(
-            min = 2,
-            max = 255,
-            message = "Пункт отправления должен быть от 2 до 255 символов")
-    @Column(name = "departure_buspoint_name", length = 255, nullable = false)
-    private String departureBuspointName;
+//    @NotBlank(message = "Пункт отправления не указан")
+//    @Size(
+//            min = 2,
+//            max = 255,
+//            message = "Пункт отправления должен быть от 2 до 255 символов")
+//    @Column(name = "departure_buspoint_name", length = 255, nullable = false)
+//    private String departureBuspointName;
 
-    @NotBlank(message = "Пункт прибытия не указан")
-    @Size(
-            min = 2,
-            max = 255,
-            message = "Пункт прибытия должен быть от 2 до 255 символов")
-    @Column(name = "arrival_buspoint_name", length = 255, nullable = false)
-    private String arrivalBuspointName;
+//    @NotBlank(message = "Пункт прибытия не указан")
+//    @Size(
+//            min = 2,
+//            max = 255,
+//            message = "Пункт прибытия должен быть от 2 до 255 символов")
+//    @Column(name = "arrival_buspoint_name", length = 255, nullable = false)
+//    private String arrivalBuspointName;
 
-    @NotNull(message = "Дата и время отправления не указаны")
-//    @Future
-    @Column(name = "departure_datetime", nullable = false)
-    private Timestamp departureDateTime;
-
-    @NotNull(message = "Дата и время прибытия не указаны")
-//    @Future
-    @Column(name = "arrival_datetime", nullable = false)
-    private Timestamp arrivalDateTime;
+//    @NotNull(message = "Дата и время отправления не указаны")
+////    @Future
+//    @Column(name = "departure_datetime", nullable = false)
+//    private Timestamp departureDateTime;
+//
+//    @NotNull(message = "Дата и время прибытия не указаны")
+////    @Future
+//    @Column(name = "arrival_datetime", nullable = false)
+//    private Timestamp arrivalDateTime;
 
     @NotNull(message = "Цена не указана")
     @DecimalMin(

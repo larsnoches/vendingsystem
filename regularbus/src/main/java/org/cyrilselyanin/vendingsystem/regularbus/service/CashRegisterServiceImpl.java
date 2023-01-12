@@ -1,7 +1,10 @@
 package org.cyrilselyanin.vendingsystem.regularbus.service;
 
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketCacheDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
+import org.cyrilselyanin.vendingsystem.regularbus.helper.TimeUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,11 @@ public class CashRegisterServiceImpl implements CashRegisterService {
 
     /**
      * Got ticket, adapt it and send for registering
-     * @param ticket Ticket instance
+     * @param ticketCacheDto Ticket cach dto instance
      */
     @Override
-    public void regCash(Ticket ticket) {
-        TicketDtoAdapter ticketDtoAdapter = new TicketDtoAdapter(ticket);
+    public void regCash(TicketCacheDto ticketCacheDto) {
+        TicketDtoAdapter ticketDtoAdapter = new TicketDtoAdapter(ticketCacheDto);
         TicketDto ticketDto = ticketDtoAdapter.adapt();
         // rabbit
         rabbitTemplate.convertAndSend(ticketDto);
@@ -33,20 +36,25 @@ public class CashRegisterServiceImpl implements CashRegisterService {
      * Ticket dto adapter
      */
     public static class TicketDtoAdapter {
-        private final Ticket adaptee;
+        private final TicketCacheDto adaptee;
 
-        public TicketDtoAdapter(Ticket adaptee) {
+        public TicketDtoAdapter(TicketCacheDto adaptee) {
             this.adaptee = adaptee;
         }
         public TicketDto adapt() {
             TicketDto ticketDto = new TicketDto();
-            ticketDto.setPassengerLastname(adaptee.getPassengerLastname());
-            ticketDto.setPassengerFirstname(adaptee.getPassengerFirstname());
-            ticketDto.setPassengerMiddlename(adaptee.getPassengerMiddlename());
-            ticketDto.setBusRouteNumber(adaptee.getBusRouteNumber());
-            ticketDto.setDepartureBuspointName(adaptee.getDepartureBuspointName());
-            ticketDto.setDepartureDateTime(adaptee.getDepartureDateTime());
-            ticketDto.setPrice(adaptee.getPrice());
+            Ticket ticket = adaptee.getTicket();
+            GetBusTripResponseDto busTripDto = adaptee.getBusTripDto();
+
+            ticketDto.setPassengerLastname(ticket.getPassengerLastname());
+            ticketDto.setPassengerFirstname(ticket.getPassengerFirstname());
+            ticketDto.setPassengerMiddlename(ticket.getPassengerMiddlename());
+            ticketDto.setBusRouteNumber(busTripDto.getBusRouteNumber());
+            ticketDto.setDepartureBuspointName(busTripDto.getDepartureBusPoint().getName());
+            ticketDto.setDepartureDateTime(TimeUtil.createTimestamp(
+                    String.format("%s %s", busTripDto.getDepartureDate(), busTripDto.getDepartureTime()))
+            );
+            ticketDto.setPrice(ticket.getPrice());
             return ticketDto;
         }
     }

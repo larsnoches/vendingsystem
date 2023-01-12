@@ -11,7 +11,7 @@ import javax.validation.Payload;
 
 @Target( { ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { TicketBeforeDateValidator.class, BusTripBeforeDateValidator.class })
+@Constraint(validatedBy = { BusTripBeforeDateValidator.class })
 @Documented
 public @interface ValidateBeforeDate {
     String message() default "The departure datetime should be before the arrival date.";

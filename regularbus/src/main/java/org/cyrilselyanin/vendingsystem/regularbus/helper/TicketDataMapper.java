@@ -4,22 +4,15 @@ import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.auth.GetUserResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.BasicTicketRequestDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetPayedTicketResponseDto;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetTicketResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.*;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-
-import java.time.format.DateTimeFormatter;
 
 @Component
 public class TicketDataMapper {
 
 	private final ModelMapper modelMapper;
-
-	private static final String datetimePattern = "dd.MM.yyyy HH:mm";
-	private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datetimePattern);
 	private final Converter<Long, BusTrip> busTripIdToBusTripConverter = r -> BusTrip.builder()
 			.id(r.getSource())
 			.build();
@@ -39,7 +32,13 @@ public class TicketDataMapper {
 		modelMapper.createTypeMap(Ticket.class, GetTicketResponseDto.class)
 				.addMappings(mapper -> mapper.using(busTripToDtoConverter).map(
 						Ticket::getBusTrip, GetTicketResponseDto::setBusTrip
-				));
+				))
+				.addMapping(t -> t.getBusTrip().getBusRouteNumber(), GetTicketResponseDto::setBusRouteNumber)
+				.addMapping(t -> t.getBusTrip().getBus().getCarrier().getName(), GetTicketResponseDto::setCarrierName)
+				.addMapping(t -> t.getBusTrip().getDepartureBusPoint().getName(), GetTicketResponseDto::setDepartureBusPointName)
+				.addMapping(t -> t.getBusTrip().getArrivalBusPoint().getName(), GetTicketResponseDto::setArrivalBusPointName)
+				.addMapping(t -> t.getBusTrip().getArrivalDateTime(), GetTicketResponseDto::setArrivalDateTime)
+				.addMapping(t -> t.getBusTrip().getDepartureDateTime(), GetTicketResponseDto::setDepartureDateTime);
 
 		modelMapper.createTypeMap(Ticket.class, GetPayedTicketResponseDto.class)
 				.addMappings(mapper -> mapper.using(busTripToBusTripIdConverter).map(
@@ -52,20 +51,37 @@ public class TicketDataMapper {
 				.addMapping(GetUserResponseDto::getMiddlename, Ticket::setPassengerMiddlename)
 				.addMapping(GetUserResponseDto::getEmail, Ticket::setEmail);
 
-		modelMapper.createTypeMap(GetBusTripResponseDto.class, Ticket.class)
-				.addMapping(GetBusTripResponseDto::getBusRouteNumber, Ticket::setBusRouteNumber)
-				.addMapping(bt -> bt.getCarrier().getName(), Ticket::setCarrierName)
-				.addMapping(bt -> bt.getDepartureBusPoint().getName(), Ticket::setDepartureBuspointName)
-				.addMapping(bt -> bt.getArrivalBusPoint().getName(), Ticket::setArrivalBuspointName)
-				.addMapping(bt -> bt.getFare().getPrice(), Ticket::setPrice);
+		modelMapper.createTypeMap(Ticket.class, TicketDto.class);
 	}
 
 	public GetTicketResponseDto toGetTicketResponseDto(Ticket ticket) {
 		return modelMapper.map(ticket, GetTicketResponseDto.class);
 	}
 
-	public GetPayedTicketResponseDto toGetPayedTicketResponseDto(Ticket ticket) {
-		return modelMapper.map(ticket, GetPayedTicketResponseDto.class);
+	public GetPayedTicketResponseDto toGetPayedTicketResponseDto(TicketCacheDto ticketCacheDto) {
+		Ticket ticket = ticketCacheDto.getTicket();
+		GetBusTripResponseDto busTripDto = ticketCacheDto.getBusTripDto();
+
+		GetPayedTicketResponseDto dto = modelMapper.map(ticket, GetPayedTicketResponseDto.class);
+
+		dto.setArrivalDateTime(
+				String.format("%s %s", busTripDto.getArrivalDate(), busTripDto.getArrivalTime())
+		);
+		dto.setDepartureDateTime(
+				String.format("%s %s", busTripDto.getDepartureDate(), busTripDto.getDepartureTime())
+		);
+		dto.setDepartureBusPointName(
+				busTripDto.getDepartureBusPoint().getName()
+		);
+		dto.setArrivalBusPointName(
+				busTripDto.getArrivalBusPoint().getName()
+		);
+		dto.setBusRouteNumber(
+				busTripDto.getBusRouteNumber()
+		);
+		dto.setCarrierName(busTripDto.getCarrier().getName());
+
+		return dto;
 	}
 
 	public Ticket fromBasicTicketRequestDto(BasicTicketRequestDto dto) {
@@ -78,10 +94,6 @@ public class TicketDataMapper {
 
 	public void fromGetUserResponseDto(GetUserResponseDto userDto, Ticket ticket) {
 		modelMapper.map(userDto, ticket);
-	}
-
-	public void fromGetBusTripResponseDto(GetBusTripResponseDto busTripDto, Ticket ticket) {
-		modelMapper.map(busTripDto, ticket);
 	}
 
 }

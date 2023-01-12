@@ -82,10 +82,10 @@ public class BusTrip {
     @JoinColumn(name = "fare_id", nullable = false)
     private Fare fare;
 
-    @NotNull(message = "Перевозчик не указан")
-    @ManyToOne
-    @JoinColumn(name = "carrier_id", nullable = false)
-    private Carrier carrier;
+//    @NotNull(message = "Перевозчик не указан")
+//    @ManyToOne
+//    @JoinColumn(name = "carrier_id", nullable = false)
+//    private Carrier carrier;
 
     @OneToMany(mappedBy = "busTrip")
     private Set<Seat> seats = new HashSet<>();

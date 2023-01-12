@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.auth.UserRole;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.BusTrip;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Seat;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.TicketStatus;
@@ -13,6 +12,7 @@ import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponse
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.BasicTicketRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetPayedTicketResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetTicketResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketCacheDto;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.QrCodeUtil;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.TicketDataMapper;
 import org.cyrilselyanin.vendingsystem.regularbus.helper.TimeUtil;
@@ -53,7 +53,7 @@ public class TicketServiceImpl implements TicketService {
     private final BusTripService busTripService;
     private final SeatService seatService;
     private final PaymentService paymentService;
-    private final Map<String, Ticket> ticketMap;
+    private final Map<String, TicketCacheDto> ticketMap;
 
     private final CashRegisterService cashRegisterService;
 
@@ -84,27 +84,17 @@ public class TicketServiceImpl implements TicketService {
         }
 
         GetBusTripResponseDto busTripDto = busTripService.getBusTrip(dto.getBusTrip());
-        ticketDataMapper.fromGetBusTripResponseDto(busTripDto, ticket);
-        ticket.setId(null);
-        ticket.setBusTrip(
-                BusTrip.builder()
-                        .id(dto.getBusTrip())
-                        .build()
-        );
 
-        ticket.setDepartureDateTime(TimeUtil.createTimestamp(
-                String.format("%s %s", busTripDto.getDepartureDate(), busTripDto.getDepartureTime())
-        ));
-        ticket.setArrivalDateTime(TimeUtil.createTimestamp(
-                String.format("%s %s", busTripDto.getArrivalDate(), busTripDto.getArrivalTime())
-        ));
-        ticket.setQrCode(String.valueOf(ticket.hashCode()));
         ticket.setStatus(TicketStatus.WAITING_TO_PAY);
 
         BigDecimal price = busTripDto.getFare().getPrice().multiply(busTripDto.getDistance());
         ticket.setPrice(price);
+        ticket.setQrCode(String.valueOf(ticket.hashCode()));
 
-        ticketMap.put(ticket.getQrCode(), ticket);
+        ticketMap.put(
+                ticket.getQrCode(),
+                new TicketCacheDto(ticket, busTripDto)
+        );
         return paymentService.createPayment("test", ticket.getQrCode());
     }
 
@@ -113,7 +103,8 @@ public class TicketServiceImpl implements TicketService {
         log.info("Update ticket with qrCode {} as payed", qrCode);
 
         try {
-            Ticket ticket = ticketMap.get(qrCode);
+            TicketCacheDto ticketCacheDto = ticketMap.get(qrCode);
+            Ticket ticket = ticketCacheDto.getTicket();
 
             ticket.setStatus(TicketStatus.PAYED);
             ticketRepo.save(ticket);
@@ -122,11 +113,11 @@ public class TicketServiceImpl implements TicketService {
                     ticket.getSeatName(), ticket.getBusTrip().getId()
             );
             seat.setSeatIsOccupied(true);
-
-            regCash(ticket);
+            regCash(ticketCacheDto);
             removeOldTicketsFromMap();
         } catch (NullPointerException | ClassCastException ex) {
             log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
+            log.error("Update ticket as payed error", ex);
             throw new IllegalStateException(
                     String.format(TICKET_QRCODE_NOT_FOUND_MESSAGE, qrCode)
             );
@@ -182,8 +173,8 @@ public class TicketServiceImpl implements TicketService {
     public GetPayedTicketResponseDto getPayedTicket(String qrCode) {
         log.info("Get payed ticket with qrCode {}", qrCode);
         try {
-            Ticket ticket = ticketMap.get(qrCode);
-            return ticketDataMapper.toGetPayedTicketResponseDto(ticket);
+            TicketCacheDto ticketCacheDto = ticketMap.get(qrCode);
+            return ticketDataMapper.toGetPayedTicketResponseDto(ticketCacheDto);
         } catch (NullPointerException | ClassCastException ex) {
             log.error(TICKET_NOT_FOUND_LOG_MESSAGE, qrCode);
             throw new IllegalStateException(
@@ -268,14 +259,9 @@ public class TicketServiceImpl implements TicketService {
 
         if (shouldUpdateBusTrip) {
             GetBusTripResponseDto busTripDto = busTripService.getBusTrip(dto.getBusTrip());
-            ticketDataMapper.fromGetBusTripResponseDto(busTripDto, exist);
 
-            exist.setDepartureDateTime(TimeUtil.createTimestamp(
-                    String.format("%s %s", busTripDto.getDepartureDate(), busTripDto.getDepartureTime())
-            ));
-            exist.setArrivalDateTime(TimeUtil.createTimestamp(
-                    String.format("%s %s", busTripDto.getArrivalDate(), busTripDto.getArrivalTime())
-            ));
+            BigDecimal price = busTripDto.getFare().getPrice().multiply(busTripDto.getDistance());
+            exist.setPrice(price);
         }
         exist.setQrCode(String.valueOf(exist.hashCode()));
     }
@@ -300,8 +286,8 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
-    public void regCash(Ticket ticket) {
-        cashRegisterService.regCash(ticket);
+    public void regCash(TicketCacheDto ticketCacheDto) {
+        cashRegisterService.regCash(ticketCacheDto);
     }
 
     private boolean isManager() {
@@ -325,8 +311,9 @@ public class TicketServiceImpl implements TicketService {
         Timestamp waitingDatetime = TimeUtil.createTimestampGreater(1);
         Timestamp payedDatetime = TimeUtil.createTimestampGreater(2);
         List<String> list = ticketMap.values().stream()
-                .filter(ticket -> {
+                .filter(ticketCacheDto -> {
                     try {
+                        Ticket ticket = ticketCacheDto.getTicket();
                         if (ticket.getIssueDateTime().after(payedDatetime)) {
                             return true;
                         }
@@ -341,7 +328,7 @@ public class TicketServiceImpl implements TicketService {
                     }
                     return false;
                 })
-                .map(Ticket::getQrCode)
+                .map(t -> t.getTicket().getQrCode())
                 .toList();
         list.forEach(ticketMap::remove);
     }

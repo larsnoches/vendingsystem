@@ -183,7 +183,6 @@ CREATE TABLE public.bustrips (
 	arrival_datetime timestamptz NOT NULL,
 	bus_id bigint,
 	fare_id bigint,
-	carrier_id bigint,
 	CONSTRAINT bustrips_pk PRIMARY KEY (bustrip_id)
 );
 -- ddl-end --
@@ -252,14 +251,8 @@ CREATE TABLE public.tickets (
 	passenger_lastname varchar(255),
 	passenger_firstname varchar(255),
 	passenger_middlename varchar(255),
-	bus_route_number varchar(15) NOT NULL,
 	qr_code varchar(255) NOT NULL,
 	seat_name varchar(10) NOT NULL,
-	carrier_name varchar(255) NOT NULL,
-	departure_buspoint_name varchar(255) NOT NULL,
-	arrival_buspoint_name varchar(255) NOT NULL,
-	departure_datetime timestamptz NOT NULL,
-	arrival_datetime timestamptz NOT NULL,
 	ticket_price numeric NOT NULL,
 	ticket_status varchar(255) NOT NULL,
 	email varchar(255),
@@ -317,13 +310,6 @@ CREATE TABLE public.users (
 COMMENT ON TABLE public.users IS E'Пользователи';
 -- ddl-end --
 ALTER TABLE public.users OWNER TO what;
--- ddl-end --
-
--- object: carriers_fk | type: CONSTRAINT --
--- ALTER TABLE public.bustrips DROP CONSTRAINT IF EXISTS carriers_fk CASCADE;
-ALTER TABLE public.bustrips ADD CONSTRAINT carriers_fk FOREIGN KEY (carrier_id)
-REFERENCES public.carriers (carrier_id) MATCH FULL
-ON DELETE SET NULL ON UPDATE CASCADE;
 -- ddl-end --
 
 -- object: departure_buspoints_fk | type: CONSTRAINT --

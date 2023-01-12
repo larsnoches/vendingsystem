@@ -21,8 +21,8 @@ public class GetTicketResponseDto {
 	private String qrCode;
 	private String seatName;
 	private String carrierName;
-	private String departureBuspointName;
-	private String arrivalBuspointName;
+	private String departureBusPointName;
+	private String arrivalBusPointName;
 	private String departureDateTime;
 	private String arrivalDateTime;
 	private BigDecimal price;

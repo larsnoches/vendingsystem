@@ -1,10 +1,10 @@
 package org.cyrilselyanin.vendingsystem.regularbus.service.vending;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.BasicTicketRequestDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetPayedTicketResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.GetTicketResponseDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketCacheDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +39,6 @@ public interface TicketService {
     @PreAuthorize("hasRole('MANAGER')")
     void removeTicket(Long id);
 
-    void regCash(Ticket ticket);
+    void regCash(TicketCacheDto ticketCacheDto);
 
 }

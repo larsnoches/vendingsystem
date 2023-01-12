@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 
 public interface BusTripRepository extends JpaRepository<BusTrip, Long> {
 
-	Page<BusTrip> findAllByCarrierId(Long id, Pageable pageable);
+	Page<BusTrip> findAllByBusCarrierId(Long id, Pageable pageable);
 	Page<BusTrip> findAllByArrivalBusPointNameContainsIgnoreCaseAndDepartureDateTimeGreaterThanEqual(
 		String busPointName, Timestamp departureDateTime, Pageable pageable
 	);

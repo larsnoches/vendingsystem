@@ -58,6 +58,6 @@ public class Carrier {
     @OneToMany(mappedBy = "carrier")
     private Set<Fare> fares = new HashSet<>();
 
-    @OneToMany(mappedBy = "carrier")
-    private Set<BusTrip> busTrips = new HashSet<>();
+//    @OneToMany(mappedBy = "carrier")
+//    private Set<BusTrip> busTrips = new HashSet<>();
 }
