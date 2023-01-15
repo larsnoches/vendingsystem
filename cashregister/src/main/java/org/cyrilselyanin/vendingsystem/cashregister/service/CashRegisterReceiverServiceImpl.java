@@ -3,15 +3,11 @@ package org.cyrilselyanin.vendingsystem.cashregister.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cyrilselyanin.vendingsystem.cashregister.config.ConfigProps;
-import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenRequestDto;
 import org.cyrilselyanin.vendingsystem.cashregister.exception.RegCashException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.DirectExchange;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -26,30 +22,7 @@ import java.util.Optional;
 @Slf4j
 public class CashRegisterReceiverServiceImpl implements CashRegisterReceiverService {
     private final SbisService sbisService;
-    private final RabbitTemplate rabbitTemplate;
-    private final DirectExchange direct;
     private final ConfigProps configProps;
-    private static final Logger logger = LoggerFactory.getLogger(CashRegisterReceiverServiceImpl.class);
-
-    /**
-    * Properties for token requesting
-    */
-//    @Value("${cashregister.sbis-auth.appClientId}")
-//    private String appClientId;
-//    @Value("${cashregister.sbis-auth.appSecret}")
-//    private String appSecret;
-//    @Value("${cashregister.sbis-auth.secretKey}")
-//    private String secretKey;
-
-//    public CashRegisterReceiverServiceImpl(
-//            SbisService sbisService,
-//            RabbitTemplate rabbitTemplate,
-//            DirectExchange direct
-//    ) {
-//        this.sbisService = sbisService;
-//        this.rabbitTemplate = rabbitTemplate;
-//        this.direct = direct;
-//    }
 
     /**
      * Receive method
@@ -57,9 +30,9 @@ public class CashRegisterReceiverServiceImpl implements CashRegisterReceiverServ
      */
     @RabbitHandler(isDefault = true)
     public void receive(TicketDto in) {
-        logger.debug("Incoming ticket dto");
-        logger.debug("{}", in);
-        logger.debug("...printed ticket dto");
+        log.debug("Incoming ticket dto");
+        log.debug("{}", in);
+        log.debug("...printed ticket dto");
 
         // reg cash with old token props
         Optional<String> token = Optional.ofNullable(sbisService.getToken());
@@ -67,9 +40,9 @@ public class CashRegisterReceiverServiceImpl implements CashRegisterReceiverServ
         if (token.isPresent() && sid.isPresent()) {
             try {
                 sbisService.regCash(in);
-                logger.debug("token and sid are present, regcash is called");
+                log.debug("token and sid are present, regcash is called");
             } catch (RegCashException ex) {
-                logger.error("With already set auth props regCash throws exception.", ex);
+                log.error("With already set auth props regCash throws exception.", ex);
             }
             return;
         }
@@ -87,12 +60,12 @@ public class CashRegisterReceiverServiceImpl implements CashRegisterReceiverServ
             sid = Optional.ofNullable(sbisService.getSid());
             if (token.isPresent() && sid.isPresent()) {
                 sbisService.regCash(in);
-                logger.debug("token and sid are present, regcash is called");
+                log.debug("token and sid are present, regcash is called");
             }
         } catch (RegCashException ex) {
-            logger.error("With new auth props regCash throws exception.", ex);
-        } catch (IOException ex) {
-            logger.error("Trying to auth and got exception.", ex);
+            log.error("With new auth props regCash throws exception.", ex);
+        } catch (IOException | RuntimeException ex) {
+            log.error("Trying to auth and got exception.", ex);
         }
     }
 }

@@ -1,10 +1,13 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenRequestDto;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenResponseDto;
+import org.cyrilselyanin.vendingsystem.cashregister.dto.error.SbisErrorDto;
+import org.cyrilselyanin.vendingsystem.cashregister.exception.RegCashException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -36,13 +39,21 @@ public class SbisAuthServiceImpl implements SbisAuthService {
                 .url(tokenUrl)
                 .post(requestBody)
                 .build();
+        String respJson = null;
         try (Response response = okHttpClient.newCall(request).execute()) {
-            String respJson = response.body().string();
-            SbisTokenResponseDto sbisTokenResponseDto = new ObjectMapper()
+            respJson = response.body().string();
+            return new ObjectMapper()
                     .readerFor(SbisTokenResponseDto.class)
                     .readValue(respJson);
-            return sbisTokenResponseDto;
+        } catch (JsonProcessingException ex) {
+            if (respJson != null) {
+                SbisErrorDto errorDto = new ObjectMapper()
+                        .readerFor(SbisErrorDto.class)
+                        .readValue(respJson);
+                throw new RegCashException(errorDto.getError().getDetails());
+            }
         }
+        return null;
     }
 
 }
