@@ -1,3 +1,6 @@
+server:
+  port: ${CASHREGISTER_SERVER_PORT:8082}
+
 cashregister:
   mqExchange: ${CASHREGISTER_MQ_EXCHANGE:cashregister.direct}
   mqQueue: ${CASHREGISTER_MQ_QUEUE:cashregisterQueue}
@@ -7,8 +10,37 @@ cashregister:
   sbisAuthSecretKey: ${SBIS_AUTH_SECRETKEY:""}
 
 spring:
+  application:
+    name: cashregister
   rabbitmq:
     host: ${CASHREG_RABBITMQ_HOST:localhost}
     port: ${CASHREG_RABBITMQ_PORT:5672}
     username: ${CASHREG_RABBITMQ_USERNAME:what}
     password: ${CASHREG_RABBITMQ_PASSWORD:what}
+
+  security:
+    user:
+      name: ${CASHREG_ADMIN_NAME:client}
+      password: ${CASHREG_ADMIN_PASSWORD:client}
+  boot:
+    admin:
+      client:
+        url: http://localhost:8081
+        username: ${DIAG_ADMIN_NAME:admin}
+        password: ${DIAG_ADMIN_PASSWORD:admin}
+        instance:
+          metadata:
+            user:
+              name: ${spring.security.user.name}
+              password: ${spring.security.user.password}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+

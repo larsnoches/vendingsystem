@@ -99,6 +99,7 @@
     <modules>
         <module>regularbus</module>
         <module>cashregister</module>
+        <module>diag</module>
     </modules>
 
     <build>
