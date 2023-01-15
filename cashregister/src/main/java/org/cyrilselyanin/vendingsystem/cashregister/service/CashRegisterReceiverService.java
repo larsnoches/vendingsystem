@@ -1,6 +1,6 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
-import org.cyrilselyanin.vendingsystem.cashregister.dto.TicketDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
 
 /**
  * Cash register receiver

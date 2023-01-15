@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,14 +14,15 @@ import org.springframework.context.annotation.Configuration;
  */
 @EnableRabbit
 @Configuration
+@EnableConfigurationProperties(ConfigProps.class)
 public class MqConfig {
     /**
      * Direct exchange bean
      * @return instance of direct exchange
      */
     @Bean
-    public DirectExchange direct() {
-        return new DirectExchange("cashregister.direct");
+    public DirectExchange direct(ConfigProps configProps) {
+        return new DirectExchange(configProps.getMqExchange());
     }
 
     /**
@@ -33,9 +35,9 @@ public class MqConfig {
          * @return some queue
          */
         @Bean
-        public Queue autoDeletingQueue() {
+        public Queue autoDeletingQueue(ConfigProps configProps) {
             // return new AnonymousQueue();
-            return new Queue("cashregisterQueue", false, false, true);
+            return new Queue(configProps.getMqQueue(), false, false, true);
         }
 
         /**
@@ -45,11 +47,11 @@ public class MqConfig {
          * @return a configured binding
          */
         @Bean
-        public Binding binding(DirectExchange directExchange, Queue queue) {
+        public Binding binding(DirectExchange directExchange, Queue queue, ConfigProps configProps) {
             return BindingBuilder.
                     bind(queue)
                     .to(directExchange)
-                    .with("regcash");
+                    .with(configProps.getMqRoutingKey());
         }
 
         /**

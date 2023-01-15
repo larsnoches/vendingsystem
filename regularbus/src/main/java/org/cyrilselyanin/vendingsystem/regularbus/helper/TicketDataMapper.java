@@ -19,10 +19,9 @@ public class TicketDataMapper {
 	private final Converter<BusTrip, Long> busTripToBusTripIdConverter = r -> r.getSource().getId();
 	private final Converter<BusTrip, GetBusTripResponseDto> busTripToDtoConverter;
 
-	public TicketDataMapper(BusTripDataMapper busTripDataMapper, UserDataMapper userDataMapper) {
+	public TicketDataMapper(BusTripDataMapper busTripDataMapper) {
 		modelMapper = new ModelMapper();
 		busTripToDtoConverter = r -> busTripDataMapper.toGetBusTripResponseDto(r.getSource());
-//		userToDtoConverter = r -> userDataMapper.toGetUserResponseDto(r.getSource());
 
 		modelMapper.createTypeMap(BasicTicketRequestDto.class, Ticket.class)
 				.addMappings(mapper -> mapper.using(busTripIdToBusTripConverter).map(
@@ -33,12 +32,34 @@ public class TicketDataMapper {
 				.addMappings(mapper -> mapper.using(busTripToDtoConverter).map(
 						Ticket::getBusTrip, GetTicketResponseDto::setBusTrip
 				))
-				.addMapping(t -> t.getBusTrip().getBusRouteNumber(), GetTicketResponseDto::setBusRouteNumber)
-				.addMapping(t -> t.getBusTrip().getBus().getCarrier().getName(), GetTicketResponseDto::setCarrierName)
-				.addMapping(t -> t.getBusTrip().getDepartureBusPoint().getName(), GetTicketResponseDto::setDepartureBusPointName)
-				.addMapping(t -> t.getBusTrip().getArrivalBusPoint().getName(), GetTicketResponseDto::setArrivalBusPointName)
-				.addMapping(t -> t.getBusTrip().getArrivalDateTime(), GetTicketResponseDto::setArrivalDateTime)
-				.addMapping(t -> t.getBusTrip().getDepartureDateTime(), GetTicketResponseDto::setDepartureDateTime);
+				.addMapping(t -> {
+					if (t.getBusTrip() == null) return null;
+					return t.getBusTrip().getBusRouteNumber();
+				}, GetTicketResponseDto::setBusRouteNumber)
+				.addMapping(t -> {
+					if (t.getBusTrip() == null) return null;
+					if (t.getBusTrip().getBus() == null) return null;
+					if (t.getBusTrip().getBus().getCarrier() == null) return null;
+					return t.getBusTrip().getBus().getCarrier().getName();
+				}, GetTicketResponseDto::setCarrierName)
+				.addMapping(t -> {
+					if (t.getBusTrip() == null) return null;
+					if (t.getBusTrip().getDepartureBusPoint() == null) return null;
+					return t.getBusTrip().getDepartureBusPoint().getName();
+				}, GetTicketResponseDto::setDepartureBusPointName)
+				.addMapping(t -> {
+					if (t.getBusTrip() == null) return null;
+					if (t.getBusTrip().getArrivalBusPoint() == null) return null;
+					return t.getBusTrip().getArrivalBusPoint().getName();
+				}, GetTicketResponseDto::setArrivalBusPointName)
+				.addMapping(t -> {
+					if (t.getBusTrip() == null) return null;
+					return t.getBusTrip().getArrivalDateTime();
+				}, GetTicketResponseDto::setArrivalDateTime)
+				.addMapping(t -> {
+					if (t.getBusTrip() == null) return null;
+					return t.getBusTrip().getDepartureDateTime();
+				}, GetTicketResponseDto::setDepartureDateTime);
 
 		modelMapper.createTypeMap(Ticket.class, GetPayedTicketResponseDto.class)
 				.addMappings(mapper -> mapper.using(busTripToBusTripIdConverter).map(

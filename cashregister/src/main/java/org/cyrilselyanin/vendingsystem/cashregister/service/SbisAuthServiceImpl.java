@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenRequestDto;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenResponseDto;
@@ -13,13 +14,10 @@ import java.io.IOException;
  * author Cyril Selyanin
  */
 @Service
+@RequiredArgsConstructor
 public class SbisAuthServiceImpl implements SbisAuthService {
     private final OkHttpClient okHttpClient;
     private final MediaType JSON_MEDIA = MediaType.get("application/json; charset=utf-8");
-
-    public SbisAuthServiceImpl(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
-    }
 
     /**
      * Get token from the Sbis service

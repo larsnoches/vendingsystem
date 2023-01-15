@@ -1,7 +1,7 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
 import okhttp3.*;
-import org.cyrilselyanin.vendingsystem.cashregister.dto.TicketDto;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenRequestDto;
 import org.junit.jupiter.api.Test;
 

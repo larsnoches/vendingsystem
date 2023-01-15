@@ -1,6 +1,9 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
-import org.cyrilselyanin.vendingsystem.cashregister.dto.TicketDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cyrilselyanin.vendingsystem.cashregister.config.ConfigProps;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisTokenRequestDto;
 import org.cyrilselyanin.vendingsystem.cashregister.exception.RegCashException;
 import org.slf4j.Logger;
@@ -9,7 +12,6 @@ import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,37 +22,40 @@ import java.util.Optional;
  */
 @Service
 @RabbitListener(queues = "#{autoDeletingQueue.name}")
+@RequiredArgsConstructor
+@Slf4j
 public class CashRegisterReceiverServiceImpl implements CashRegisterReceiverService {
     private final SbisService sbisService;
     private final RabbitTemplate rabbitTemplate;
     private final DirectExchange direct;
+    private final ConfigProps configProps;
     private static final Logger logger = LoggerFactory.getLogger(CashRegisterReceiverServiceImpl.class);
 
     /**
     * Properties for token requesting
     */
-    @Value("${cashregister.sbis-auth.appClientId}")
-    private String appClientId;
-    @Value("${cashregister.sbis-auth.appSecret}")
-    private String appSecret;
-    @Value("${cashregister.sbis-auth.secretKey}")
-    private String secretKey;
+//    @Value("${cashregister.sbis-auth.appClientId}")
+//    private String appClientId;
+//    @Value("${cashregister.sbis-auth.appSecret}")
+//    private String appSecret;
+//    @Value("${cashregister.sbis-auth.secretKey}")
+//    private String secretKey;
 
-    public CashRegisterReceiverServiceImpl(
-            SbisService sbisService,
-            RabbitTemplate rabbitTemplate,
-            DirectExchange direct
-    ) {
-        this.sbisService = sbisService;
-        this.rabbitTemplate = rabbitTemplate;
-        this.direct = direct;
-    }
+//    public CashRegisterReceiverServiceImpl(
+//            SbisService sbisService,
+//            RabbitTemplate rabbitTemplate,
+//            DirectExchange direct
+//    ) {
+//        this.sbisService = sbisService;
+//        this.rabbitTemplate = rabbitTemplate;
+//        this.direct = direct;
+//    }
 
     /**
      * Receive method
      * @param in Some ticketDto object
      */
-    @RabbitHandler
+    @RabbitHandler(isDefault = true)
     public void receive(TicketDto in) {
         logger.debug("Incoming ticket dto");
         logger.debug("{}", in);
@@ -71,9 +76,9 @@ public class CashRegisterReceiverServiceImpl implements CashRegisterReceiverServ
 
         // new dto for token request
         SbisTokenRequestDto requestDto = SbisTokenRequestDto.create(
-                appClientId,
-                appSecret,
-                secretKey
+                configProps.getSbisAuthAppClientId(),
+                configProps.getSbisAuthAppSecret(),
+                configProps.getSbisAuthSecretKey()
         );
 
         try {

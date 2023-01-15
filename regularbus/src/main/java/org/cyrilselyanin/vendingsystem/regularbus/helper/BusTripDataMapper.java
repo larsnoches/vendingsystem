@@ -100,9 +100,6 @@ public class BusTripDataMapper {
 				.addMappings(mapper -> mapper.using(datetimeStringToTimestampConverter).map(
 						BasicBusTripRequestDto::getArrivalDatetime, BusTrip::setArrivalDateTime
 				))
-//				.addMappings(mapper -> mapper.using(carrierIdToCarrierConverter).map(
-//						BasicBusTripRequestDto::getCarrier, BusTrip::setCarrier
-//				))
 				.addMappings(mapper -> mapper.using(fareIdToFareConverter).map(
 						BasicBusTripRequestDto::getFare, BusTrip::setFare
 				))

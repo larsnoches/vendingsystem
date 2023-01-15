@@ -1,6 +1,7 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisRegCashRequestDto;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisRegCashResponseDto;
@@ -13,15 +14,12 @@ import java.io.IOException;
  * author Cyril Selyanin
  */
 @Service
+@RequiredArgsConstructor
 public class SbisRetailServiceImpl implements SbisRetailService {
     private final OkHttpClient okHttpClient;
     private final MediaType JSON_MEDIA = MediaType.get(
             "application/json; charset=utf-8"
     );
-
-    public SbisRetailServiceImpl(OkHttpClient okHttpClient) {
-        this.okHttpClient = okHttpClient;
-    }
 
     /**
      * Reistering cash

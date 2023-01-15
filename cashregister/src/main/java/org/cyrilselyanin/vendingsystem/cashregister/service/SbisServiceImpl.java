@@ -1,9 +1,11 @@
 package org.cyrilselyanin.vendingsystem.cashregister.service;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.*;
 import org.cyrilselyanin.vendingsystem.cashregister.dto.SbisRegCashRequestDto;
 import org.cyrilselyanin.vendingsystem.cashregister.exception.RegCashException;
+import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketDto;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,9 +15,10 @@ import java.math.BigDecimal;
  * Sbis service implementation
  */
 @Service
+@RequiredArgsConstructor
 public class SbisServiceImpl implements SbisService {
-    private final String authUrl = "https://online.sbis.ru/oauth/service";
-    private final String regCashUrl = "https://api.sbis.ru/retail/sale/create";
+    private static final String AUTH_URL = "https://online.sbis.ru/oauth/service";
+    private static final String REG_CASH_URL = "https://api.sbis.ru/retail/sale/create";
 
     private final SbisAuthService sbisAuthService;
 
@@ -27,17 +30,9 @@ public class SbisServiceImpl implements SbisService {
     @Getter
     private String sid;
 
-    public SbisServiceImpl(
-            SbisAuthService sbisAuthService,
-            SbisRetailService sbisRetailService
-    ) {
-        this.sbisAuthService = sbisAuthService;
-        this.sbisRetailService = sbisRetailService;
-    }
-
     @Override
     public void requestToken(SbisTokenRequestDto requestDto) throws IOException {
-        SbisTokenResponseDto responseDto = sbisAuthService.getToken(authUrl, requestDto);
+        SbisTokenResponseDto responseDto = sbisAuthService.getToken(AUTH_URL, requestDto);
         TokenResponseDtoAdapter tokenResponseDtoAdapter = new TokenResponseDtoAdapter(responseDto);
         tokenResponseDtoAdapter.adapt();
     }
@@ -48,18 +43,13 @@ public class SbisServiceImpl implements SbisService {
         SbisRegCashRequestDto sbisRegCashRequestDto = regCashRequestDtoAdapter.adapt();
         try {
             SbisRegCashResponseDto sbisRegCashResponseDto = sbisRetailService.regCash(
-                    regCashUrl, token, sid, sbisRegCashRequestDto
+                    REG_CASH_URL, token, sid, sbisRegCashRequestDto
             );
         } catch (IOException | NullPointerException ex) {
             throw new RegCashException(ex.getMessage());
         }
 
     }
-
-//    @Override
-//    public String getToken() {
-//        return token;
-//    }
 
     /**
      * Adapter for token response dto

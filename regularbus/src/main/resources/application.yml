@@ -1,3 +1,8 @@
+regularbus:
+  mqExchange: ${REGULARBUS_MQ_EXCHANGE:cashregister.direct}
+  mqQueue: ${REGULARBUS_MQ_QUEUE:cashregisterQueue}
+  mqRoutingKey: ${REGULARBUS_MQ_ROUTING_KEY:regcash}
+
 server:
   port: ${REGULARBUS_SERVER_PORT:8080}
   error:
@@ -36,11 +41,11 @@ spring:
   liquibase:
     change-log: classpath:db/db-changeset-master.xml
 
-#  rabbitmq:
-#    host: ${CASHREG_RABBITMQ_HOST:localhost}
-#    port: ${CASHREG_RABBITMQ_PORT:5672}
-#    username: ${CASHREG_RABBITMQ_USERNAME:what}
-#    password: ${CASHREG_RABBITMQ_PASSWORD:what}
+  rabbitmq:
+    host: ${CASHREG_RABBITMQ_HOST:localhost}
+    port: ${CASHREG_RABBITMQ_PORT:5672}
+    username: ${CASHREG_RABBITMQ_USERNAME:what}
+    password: ${CASHREG_RABBITMQ_PASSWORD:what}
 
 # Log
 logging:

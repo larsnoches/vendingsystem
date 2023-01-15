@@ -1,5 +1,7 @@
 package org.cyrilselyanin.vendingsystem.regularbus.service;
 
+import lombok.RequiredArgsConstructor;
+import org.cyrilselyanin.vendingsystem.regularbus.config.ConfigProps;
 import org.cyrilselyanin.vendingsystem.regularbus.domain.vending.Ticket;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.bustrip.GetBusTripResponseDto;
 import org.cyrilselyanin.vendingsystem.regularbus.dto.ticket.TicketCacheDto;
@@ -13,12 +15,11 @@ import org.springframework.stereotype.Service;
  * It sends via rabbitMQ a dto to the cashreg subsystem.
  */
 @Service
+@RequiredArgsConstructor
 public class CashRegisterServiceImpl implements CashRegisterService {
-    private final RabbitTemplate rabbitTemplate;
 
-    public CashRegisterServiceImpl(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
+    private final RabbitTemplate rabbitTemplate;
+    private final ConfigProps configProps;
 
     /**
      * Got ticket, adapt it and send for registering
@@ -29,7 +30,11 @@ public class CashRegisterServiceImpl implements CashRegisterService {
         TicketDtoAdapter ticketDtoAdapter = new TicketDtoAdapter(ticketCacheDto);
         TicketDto ticketDto = ticketDtoAdapter.adapt();
         // rabbit
-        rabbitTemplate.convertAndSend(ticketDto);
+        rabbitTemplate.convertAndSend(
+                configProps.getMqExchange(),
+                configProps.getMqRoutingKey(),
+                ticketDto
+        );
     }
 
     /**
@@ -58,4 +63,5 @@ public class CashRegisterServiceImpl implements CashRegisterService {
             return ticketDto;
         }
     }
+
 }

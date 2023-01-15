@@ -1,12 +1,14 @@
 cashregister:
-  sbis-auth:
-    appClientId: ${SBIS_AUTH_APPCLIENT_ID:""}
-    appSecret: ${SBIS_AUTH_APPSECRET:""}
-    secretKey: ${SBIS_AUTH_SECRETKEY:""}
+  mqExchange: ${CASHREGISTER_MQ_EXCHANGE:cashregister.direct}
+  mqQueue: ${CASHREGISTER_MQ_QUEUE:cashregisterQueue}
+  mqRoutingKey: ${CASHREGISTER_MQ_ROUTING_KEY:regcash}
+  sbisAuthAppClientId: ${SBIS_AUTH_APPCLIENT_ID:""}
+  sbisAuthAppSecret: ${SBIS_AUTH_APPSECRET:""}
+  sbisAuthSecretKey: ${SBIS_AUTH_SECRETKEY:""}
 
 spring:
   rabbitmq:
     host: ${CASHREG_RABBITMQ_HOST:localhost}
     port: ${CASHREG_RABBITMQ_PORT:5672}
-    username: ${CASHREG_RABBITMQ_USERNAME:guest}
-    password: ${CASHREG_RABBITMQ_PASSWORD:guest}
+    username: ${CASHREG_RABBITMQ_USERNAME:what}
+    password: ${CASHREG_RABBITMQ_PASSWORD:what}
